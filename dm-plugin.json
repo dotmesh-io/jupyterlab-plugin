@@ -1,0 +1,5 @@
+{
+  "load_extensions": {
+    "dm-versioning": true
+  }
+}
