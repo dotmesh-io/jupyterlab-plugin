@@ -56,7 +56,13 @@ const plugin: JupyterLabPlugin<void> = {
     const populate = () => {
       tabs.clearTabs();
       COMMIT_DATA.forEach(commit => {
-        const tabTitle = new Title<Widget>({label: commit.Id, owner: tabs})
+        const timestampNumber = Number(commit.Metadata.timestamp) / 1000000
+        const timestampDate = new Date(timestampNumber)
+        const timestampDateTitle = timestampDate.getDate()  + "/" + (timestampDate.getMonth()+1) + "/" + timestampDate.getFullYear() + " " +
+timestampDate.getHours() + ":" + timestampDate.getMinutes();
+
+        const tabLabel = timestampDateTitle + ' -> ' + commit.Metadata.message
+        const tabTitle = new Title<Widget>({label: tabLabel, owner: tabs})
         tabs.addTab(tabTitle)
       })
     }
