@@ -14,10 +14,20 @@ import {
 
 import '../style/index.css';
 
-const LIST_DATA = [
-  "apples",
-  "oranges",
-]
+const API_URL = 'http://127.0.0.1:8000/example.json'
+
+type CommitMetadata = {
+  author: string;
+  message: string;
+  timestamp: string;
+}
+
+type Commit = {
+  Id: string;
+  Metadata: CommitMetadata;
+}
+
+var COMMIT_DATA: Commit[] = []
 
 const plugin: JupyterLabPlugin<void> = {
   id: 'jupyterlab_dotscience_plugin',
@@ -33,20 +43,26 @@ const plugin: JupyterLabPlugin<void> = {
     tabs.node.insertBefore(header, tabs.contentNode);
     shell.addToLeftArea(tabs, { rank: 50 });
 
+    const fetchData = () => {
+      fetch(API_URL).then(response => {
+        return response.json();
+      }).then(data => {
+        COMMIT_DATA = data
+        populate()
+        setTimeout(fetchData, 1000)
+      });
+    }
+
+    const populate = () => {
+      tabs.clearTabs();
+      COMMIT_DATA.forEach(commit => {
+        const tabTitle = new Title<Widget>({label: commit.Id, owner: tabs})
+        tabs.addTab(tabTitle)
+      })
+    }
+
     app.restored.then(() => {
-      const populate = () => {
-        tabs.clearTabs();
-
-        LIST_DATA.forEach(title => {
-          const tabTitle = new Title<Widget>({label: title, owner: tabs})
-          tabs.addTab(tabTitle)
-        })
-
-//        each(shell.widgets('main'), widget => { tabs.addTab(widget.title); });
-      };
-
-      // Connect signal handlers.
-      shell.layoutModified.connect(() => { populate(); });
+      shell.layoutModified.connect(() => { fetchData() });
       tabs.tabActivateRequested.connect((sender, tab) => {
         //shell.activateById(tab.title.owner.id);
         console.log('-------------------------------------------');
@@ -57,9 +73,7 @@ const plugin: JupyterLabPlugin<void> = {
       tabs.tabCloseRequested.connect((sender, tab) => {
         tab.title.owner.close();
       });
-
-      // Populate the tab manager.
-      populate();
+      fetchData()
     });
   },
   autoStart: true,
