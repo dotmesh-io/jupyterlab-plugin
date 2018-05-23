@@ -5,8 +5,6 @@ JupyterLab dotscience: proxy through to local dotscience instance
 from notebook.utils import url_path_join
 
 __version__ = '0.0.1'
-from .build import LatexBuildHandler
-from .synctex import LatexSynctexHandler
 
 from notebook.base.handlers import APIHandler
 
