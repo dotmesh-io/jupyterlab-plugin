@@ -6,6 +6,7 @@ from notebook.utils import url_path_join
 
 __version__ = '0.0.1'
 
+import os
 from tornado import web
 from notebook.base.handlers import APIHandler
 
@@ -14,6 +15,16 @@ from dotmesh.client import DotmeshClient
 
 # XXX is this right???
 path_regex = r'(?P<path>(?:(?:/[^/]+)+|/?))'
+
+import sys
+if sys.platform == "darwin":
+    # probably not in a container! so try to connect to dotmesh on localhost
+    # (dev mode)
+    CLUSTER_URL = "http://127.0.0.1:32607/rpc"
+else:
+    CLUSTER_URL = "http://172.17.0.1:32607/rpc"
+
+
 
 def _jupyter_server_extension_paths():
     return [{
@@ -32,7 +43,13 @@ def load_jupyter_server_extension(nb_server_app):
     # Prepend the base_url so that it works in a jupyterhub setting
     base_url = web_app.settings['base_url']
     dotscience = url_path_join(base_url, 'dotscience')
-    commits = url_path_join(latex, 'commits')
+    commits = url_path_join(dotscience, 'commits')
+
+    print("=========================")
+    print("I AM ME")
+    print("base_url: %s", web_app.settings['base_url'])
+    print("commits: %s", commits)
+    print("=========================")
 
     handlers = [(f'{commits}{path_regex}',
                  DotmeshAPIProxy,
@@ -61,7 +78,7 @@ class DotmeshAPIProxy(APIHandler):
         """
         self.finish(
             DotmeshClient(
-                cluster_url="http://172.17.0.1:32607/rpc",
+                cluster_url=CLUSTER_URL,
                 username="admin",
                 api_key=os.environ.get("DOTMESH_API_KEY", "password"),
             ).getDot("dotscience-project").getBranch("master").log()

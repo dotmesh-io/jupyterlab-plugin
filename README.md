@@ -1,10 +1,16 @@
+# jupyterlab-dotscience plugin
+
+A JupyterLab extension which enables data & model versioning and summary statistics tracking.
+
+See [dotscience](https://github.com/dotmesh-io/dotscience) for more details.
+
 # installing backend
 
 To install the backend, assuming you've followed the conda based setup [xkcd example](http://jupyterlab.readthedocs.io/en/stable/developer/xkcd_extension_tutorial.html):
 ```
 conda install pip
 pip install datadots-api==0.1.2
-pip install jupyterlab_dotscience_backend
+pip install -e jupyterlab_dotscience_backend
 jupyter serverextension enable --py jupyterlab_dotscience_backend --sys-prefix
 ```
 
@@ -14,4 +20,3 @@ jupyter serverextension enable --py jupyterlab_dotscience_backend --sys-prefix
 ```
 jupyter labextension install jupyterlab_dotscience --no-build
 ```
-
