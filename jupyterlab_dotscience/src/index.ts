@@ -49,8 +49,10 @@ const plugin: JupyterLabPlugin<void> = {
       fetch(API_URL).then(response => {
         return response.json();
       }).then(data => {
-        COMMIT_DATA = data
-        populate()
+        if(data.length!=COMMIT_DATA.length) {
+          COMMIT_DATA = data
+          populate()
+        }
         setTimeout(fetchData, 1000)
       });
     }
@@ -60,10 +62,9 @@ const plugin: JupyterLabPlugin<void> = {
       COMMIT_DATA.forEach(commit => {
         const timestampNumber = Number(commit.Metadata.timestamp) / 1000000
         const timestampDate = new Date(timestampNumber)
-        const timestampDateTitle = timestampDate.getDate()  + "/" + (timestampDate.getMonth()+1) + "/" + timestampDate.getFullYear() + " " +
-timestampDate.getHours() + ":" + timestampDate.getMinutes();
+        const timestampDateTitle = timestampDate.getDate()  + "/" + (timestampDate.getMonth()+1) + "/" + timestampDate.getFullYear() + " " + timestampDate.getHours() + ":" + timestampDate.getMinutes();
 
-        const tabLabel = timestampDateTitle + ' -> ' + commit.Metadata.message
+        const tabLabel = timestampDateTitle + ' - ' + commit.Metadata.message
         const tabTitle = new Title<Widget>({label: tabLabel, owner: tabs})
         tabs.addTab(tabTitle)
       })
