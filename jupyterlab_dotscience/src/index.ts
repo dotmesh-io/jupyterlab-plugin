@@ -14,7 +14,9 @@ import {
 
 import '../style/index.css';
 
-const API_URL = 'http://127.0.0.1:8000/example.json'
+//const API_URL = 'http://127.0.0.1:8000/example.json'
+
+const API_URL = '/dotscience/commits'
 
 type CommitMetadata = {
   author: string;
