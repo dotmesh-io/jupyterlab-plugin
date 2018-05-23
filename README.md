@@ -20,3 +20,15 @@ jupyter serverextension enable --py jupyterlab_dotscience_backend --sys-prefix
 ```
 jupyter labextension install jupyterlab_dotscience --no-build
 ```
+
+## Summary statistics
+
+An example of outputting summary statistics from a Jupyterlab Notebook cell:
+
+```python
+import json
+print('DOTSCIENCE_SUMMARY=' + json.dumps({
+    "apples":10
+}))
+```
+
