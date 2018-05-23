@@ -4,8 +4,10 @@ To install the backend, assuming you've followed the conda based setup [xkcd exa
 ```
 conda install pip
 pip install datadots-api==0.1.2
-jupyter serverextension enable jupyterlab_dotscience_backend
+jupyter serverextension enable --py jupyterlab_dotscience_backend --sys-prefix
 ```
+
+[More details](http://jupyter-notebook.readthedocs.io/en/stable/examples/Notebook/Distributing%20Jupyter%20Extensions%20as%20Python%20Packages.html#Enable-a-Server-Extension)
 
 # installing frontend
 ```

@@ -6,6 +6,7 @@ from notebook.utils import url_path_join
 
 __version__ = '0.0.1'
 
+from tornado import web
 from notebook.base.handlers import APIHandler
 
 # TODO pip3 install datadots-api==0.1.2
@@ -35,7 +36,7 @@ def load_jupyter_server_extension(nb_server_app):
 
     handlers = [(f'{commits}{path_regex}',
                  DotmeshAPIProxy,
-                 {"notebook_dir": nb_server_app.notebook_dir}
+                 {"notebook_dir": nb_server_app.notebook_dir},
                 )]
     web_app.add_handlers('.*$', handlers)
 
