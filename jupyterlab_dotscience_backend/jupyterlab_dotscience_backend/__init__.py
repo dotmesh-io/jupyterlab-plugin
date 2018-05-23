@@ -6,7 +6,7 @@ from notebook.utils import url_path_join
 
 __version__ = '0.0.1'
 
-import os
+import os, json
 from tornado import web
 from notebook.base.handlers import APIHandler
 
@@ -47,8 +47,8 @@ def load_jupyter_server_extension(nb_server_app):
 
     print("=========================")
     print("I AM ME")
-    print("base_url: %s", web_app.settings['base_url'])
-    print("commits: %s", commits)
+    print("base_url: %s" % (web_app.settings['base_url'],))
+    print("commits: %s" % (commits,))
     print("=========================")
 
     handlers = [(f'{commits}{path_regex}',
@@ -68,7 +68,6 @@ class DotmeshAPIProxy(APIHandler):
         # Not sure if we need this, but it might come in handy.
         self.notebook_dir = notebook_dir
 
-    @web.authenticated
     # TODO make this asynchronous so that it doesn't block jupyter server on
     # making API calls to dotmesh
     # @gen.coroutine
@@ -77,9 +76,9 @@ class DotmeshAPIProxy(APIHandler):
         Get the commits on the dotscience-project dot.
         """
         self.finish(
-            DotmeshClient(
+            json.dumps(DotmeshClient(
                 cluster_url=CLUSTER_URL,
                 username="admin",
                 api_key=os.environ.get("DOTMESH_API_KEY", "password"),
-            ).getDot("dotscience-project").getBranch("master").log()
+            ).getDot("dotscience-project").getBranch("master").log())
         )
