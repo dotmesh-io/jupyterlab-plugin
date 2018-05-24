@@ -41,7 +41,7 @@ const plugin: JupyterLabPlugin<void> = {
     commitList.title.label = 'Dotscience'
 
     header.textContent = 'Commits'
-    container.textContent = 'Content'
+    container.textContent = 'no commits'
 
     commitList.node.appendChild(header)
     commitList.node.appendChild(container)
