@@ -4,6 +4,13 @@ A JupyterLab extension which enables data & model versioning and summary statist
 
 See [dotscience](https://github.com/dotmesh-io/dotscience) for more details.
 
+# Run Jupyter lab on your host
+
+```
+source ~/miniconda/bin/activate jupyterlab-ext
+jupyter lab --watch
+```
+
 # installing backend
 
 To install the backend, assuming you've followed the conda based setup [xkcd example](http://jupyterlab.readthedocs.io/en/stable/developer/xkcd_extension_tutorial.html):
@@ -31,4 +38,3 @@ print('DOTSCIENCE_SUMMARY=' + json.dumps({
     "apples":10
 }))
 ```
-

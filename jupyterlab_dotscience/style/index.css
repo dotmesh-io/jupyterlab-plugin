@@ -39,6 +39,49 @@
   text-transform: uppercase;
 }
 
+#dotscience-manager .dotscience-commit-container {
+  padding: 12px 12px;
+  border: none;
+  border-bottom: 1px solid #e5e5e5;
+  position: relative;
+  overflow: visible;
+}
+
+#dotscience-manager .dotscience-commit-container:hover {
+  background: var(--jp-layout-color2);
+}
+
+#dotscience-manager .dotscience-commit-container .dotscience-commit-title {
+  float: left;
+}
+
+#dotscience-manager .dotscience-commit-container .dotscience-commit-title .date {
+  font-weight: bold;
+  color: #999;
+  font-size: 0.8em;
+}
+
+#dotscience-manager .dotscience-commit-container .dotscience-commit-title .message {
+  
+}
+
+#dotscience-manager .dotscience-commit-container .dotscience-commit-toggle {
+  float: right;
+}
+
+#dotscience-manager .dotscience-commit-container .dotscience-commit-toggle button {
+  color: #ffffff;
+  background-color: #999999;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+#dotscience-manager .dotscience-commit-container .dotscience-commit-metadata {
+  clear: left;
+  color: #999;
+  padding-top: 8px;
+}
+
 
 #dotscience-manager .p-TabBar-tab {
   height: var(--jp-private-tab-manager-tab-height);
