@@ -37,6 +37,8 @@ const plugin: JupyterLabPlugin<void> = {
     const header = document.createElement('header')
     const container = document.createElement('div')
 
+    container.className = 'dotscience-commit-top-container'
+
     commitList.id = 'dotscience-manager'
     commitList.title.label = 'Dotscience'
 
@@ -159,6 +161,11 @@ const plugin: JupyterLabPlugin<void> = {
         const commitContainer = getCommitContainer(commit, id)
         container.appendChild(commitContainer)
       })
+
+      const gapContainer = document.createElement('div')
+      gapContainer.className = 'dotscience-bottom-gap'
+
+      container.appendChild(gapContainer)
 
 
       /*
