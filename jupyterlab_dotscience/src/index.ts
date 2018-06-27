@@ -27,6 +27,7 @@ type Commit = {
 
 var COMMIT_DATA: Commit[] = []
 var COMMIT_TOGGLE_STATES: GenericObject = {}
+var CURRENT_FETCH_DATA_TIMEOUT_ID: any = null
 
 const plugin: JupyterLabPlugin<void> = {
   id: 'jupyterlab_dotscience_plugin',
@@ -64,6 +65,10 @@ const plugin: JupyterLabPlugin<void> = {
     shell.addToLeftArea(tabs, { rank: 50 });
 */
     const fetchData = () => {
+      if (CURRENT_FETCH_DATA_TIMEOUT_ID) {
+        clearTimeout(CURRENT_FETCH_DATA_TIMEOUT_ID)
+        CURRENT_FETCH_DATA_TIMEOUT_ID = null
+      }
       fetch(API_URL).then(response => {
         return response.json();
       }).then(data => {
@@ -71,7 +76,7 @@ const plugin: JupyterLabPlugin<void> = {
           COMMIT_DATA = data
           populate()
         }
-        setTimeout(fetchData, 1000)
+        CURRENT_FETCH_DATA_TIMEOUT_ID = setTimeout(fetchData, 1000)
       });
     }
 
