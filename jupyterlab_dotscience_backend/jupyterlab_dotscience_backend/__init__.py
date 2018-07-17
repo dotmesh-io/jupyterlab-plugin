@@ -16,14 +16,24 @@ from dotmesh.client import DotmeshClient
 # XXX is this right???
 path_regex = r'(?P<path>(?:(?:/[^/]+)+|/?))'
 
+import socket, struct
+def get_default_gateway_linux():
+    """Read the default gateway directly from /proc."""
+    with open("/proc/net/route") as fh:
+        for line in fh:
+            fields = line.strip().split()
+            if fields[1] != '00000000' or not int(fields[3], 16) & 2:
+                continue
+
+            return socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
+
 import sys
 if sys.platform == "darwin":
     # probably not in a container! so try to connect to dotmesh on localhost
     # (dev mode)
     CLUSTER_URL = "http://127.0.0.1:32607/rpc"
 else:
-    CLUSTER_URL = "http://172.17.0.1:32607/rpc"
-
+    CLUSTER_URL = "http://" + get_default_gateway_linux() + ":32607/rpc"
 
 
 def _jupyter_server_extension_paths():
