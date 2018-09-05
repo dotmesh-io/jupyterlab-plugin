@@ -39,12 +39,21 @@
   text-transform: uppercase;
 }
 
+#dotscience-manager .dotscience-commit-top-container {
+  height: 100%;
+  overflow-y: auto;
+}
+
 #dotscience-manager .dotscience-commit-container {
   padding: 12px 12px;
   border: none;
   border-bottom: 1px solid #e5e5e5;
   position: relative;
   overflow: visible;
+}
+
+#dotscience-manager .dotscience-bottom-gap {
+  height: 50px;
 }
 
 #dotscience-manager .dotscience-commit-container:hover {
