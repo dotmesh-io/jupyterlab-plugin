@@ -13,8 +13,23 @@ from notebook.base.handlers import APIHandler
 # TODO pip3 install datadots-api==0.1.2
 from dotmesh.client import DotmeshClient
 
+import logging
+logging.getLogger('jsonrpcclient.client.request').setLevel(logging.ERROR)
+logging.getLogger('jsonrpcclient.client.response').setLevel(logging.ERROR)
+
 # XXX is this right???
 path_regex = r'(?P<path>(?:(?:/[^/]+)+|/?))'
+
+import socket, struct
+def get_default_gateway_linux():
+    """Read the default gateway directly from /proc."""
+    with open("/proc/net/route") as fh:
+        for line in fh:
+            fields = line.strip().split()
+            if fields[1] != '00000000' or not int(fields[3], 16) & 2:
+                continue
+
+            return socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
 
 import sys
 if sys.platform == "darwin":
@@ -22,8 +37,7 @@ if sys.platform == "darwin":
     # (dev mode)
     CLUSTER_URL = "http://127.0.0.1:32607/rpc"
 else:
-    CLUSTER_URL = "http://172.17.0.1:32607/rpc"
-
+    CLUSTER_URL = "http://" + get_default_gateway_linux() + ":32607/rpc"
 
 
 def _jupyter_server_extension_paths():
@@ -80,5 +94,5 @@ class DotmeshAPIProxy(APIHandler):
                 cluster_url=CLUSTER_URL,
                 username="admin",
                 api_key=os.environ.get("DOTMESH_API_KEY", "password"),
-            ).getDot("dotscience-project").getBranch("master").log())
+            ).getDot(os.environ.get("DOTSCIENCE_PROJECT_DOT", "dotscience-project")).getBranch("master").log())
         )
