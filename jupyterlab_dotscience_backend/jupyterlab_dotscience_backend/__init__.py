@@ -11,7 +11,7 @@ from tornado import web
 from notebook.base.handlers import APIHandler
 
 # TODO pip3 install datadots-api==0.1.2
-from dotmesh.client import DotmeshClient, Dot
+from dotmesh.client import DotmeshClient, DotName
 
 import logging
 logging.getLogger('jsonrpcclient.client.request').setLevel(logging.ERROR)
@@ -89,7 +89,7 @@ class DotmeshAPIProxy(APIHandler):
         """
         Get the commits on the dotscience-project dot.
         """
-        projectDot = Dot.fromDotNameWithOptionalNamespace(
+        projectDot = DotName.fromDotNameWithOptionalNamespace(
             os.environ.get("DOTSCIENCE_PROJECT_DOT", "dotscience-project")
         )
         self.finish(
@@ -97,5 +97,5 @@ class DotmeshAPIProxy(APIHandler):
                 cluster_url=CLUSTER_URL,
                 username="admin",
                 api_key=os.environ.get("DOTMESH_API_KEY", "password"),
-            ).getDot(dot.name, ns=dot.namespace).getBranch("master").log())
+            ).getDot(projectDot).getBranch("master").log())
         )
