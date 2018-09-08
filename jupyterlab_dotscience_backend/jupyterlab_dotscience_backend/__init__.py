@@ -60,7 +60,7 @@ def load_jupyter_server_extension(nb_server_app):
     commits = url_path_join(dotscience, 'commits')
 
     print("=========================")
-    print("I AM ME")
+    print("Jupyter Dotscience plugin backend loaded.")
     print("base_url: %s" % (web_app.settings['base_url'],))
     print("commits: %s" % (commits,))
     print("=========================")
@@ -89,13 +89,16 @@ class DotmeshAPIProxy(APIHandler):
         """
         Get the commits on the dotscience-project dot.
         """
-        projectDot = DotName.fromDotNameWithOptionalNamespace(
+        # Just use the name of the workspace dot (rather than including the
+        # namespace) because it's cloned locally under the admin account. See
+        # https://github.com/dotmesh-io/dotscience-agent/issues/70
+        workspaceDot = DotName.fromDotNameWithOptionalNamespace(
             os.environ.get("DOTSCIENCE_PROJECT_DOT", "dotscience-project")
-        )
+        ).name
         self.finish(
             json.dumps(DotmeshClient(
                 cluster_url=CLUSTER_URL,
                 username="admin",
                 api_key=os.environ.get("DOTMESH_API_KEY", "password"),
-            ).getDot(projectDot).getBranch("master").log())
+            ).getDot(workspaceDot).getBranch("master").log())
         )
