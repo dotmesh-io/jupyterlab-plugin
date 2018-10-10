@@ -9,6 +9,7 @@ __version__ = '0.0.2'
 import os, json
 from tornado import web
 from notebook.base.handlers import APIHandler
+import requests
 
 # TODO pip3 install datadots-api==0.1.2
 from dotmesh.client import DotmeshClient, DotName
@@ -39,6 +40,7 @@ if sys.platform == "darwin":
 else:
     CLUSTER_URL = "http://" + get_default_gateway_linux() + ":32607/rpc"
 
+COMMITTER_STATUS_URL = "http://" + os.environ.get("DOTSCIENCE_COMMITTER_HOSTNAME", "committer") + "/status"
 
 def _jupyter_server_extension_paths():
     return [{
@@ -135,10 +137,6 @@ class CommitterStatusProxy(APIHandler):
         Get the current status of the committer
         """
         print("____HERE_COMMITTER____")
-        self.finish(
-            json.dumps({
-                "ok": True,
-                "apples": "orange"
-            })
-        )
+        r = requests.get(COMMITTER_STATUS_URL)
+        self.finish(json.dumps(r.json()))
 
