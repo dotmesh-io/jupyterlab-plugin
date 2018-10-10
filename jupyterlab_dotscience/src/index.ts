@@ -16,7 +16,8 @@ import '../style/index.css';
 
 //const API_URL = 'http://127.0.0.1:8000/example.json'
 
-const API_URL = '/dotscience/commits'
+const COMMITS_API_URL = '/dotscience/commits'
+const STATUS_API_URL = '/dotscience/status'
 
 type GenericObject = { [key: string]: any };
 
@@ -51,8 +52,6 @@ const plugin: JupyterLabPlugin<void> = {
 
     shell.addToLeftArea(commitList, { rank: 50 });
 
-    console.log(commitList)
-
 /*
     const tabs = new TabBar<Widget>({ orientation: 'vertical' });
     const header = document.createElement('header');
@@ -64,20 +63,39 @@ const plugin: JupyterLabPlugin<void> = {
     tabs.node.insertBefore(header, tabs.contentNode);
     shell.addToLeftArea(tabs, { rank: 50 });
 */
+
+    const fetchCommitData = () => {
+      return fetch(COMMITS_API_URL)
+        .then(response => {
+          return response.json()
+        })
+    }
+
+    const fetchStatusData = () => {
+      return fetch(STATUS_API_URL)
+        .then(response => {
+          return response.json()
+        })
+    }
+
     const fetchData = () => {
       if (CURRENT_FETCH_DATA_TIMEOUT_ID) {
         clearTimeout(CURRENT_FETCH_DATA_TIMEOUT_ID)
         CURRENT_FETCH_DATA_TIMEOUT_ID = null
       }
-      fetch(API_URL).then(response => {
-        return response.json();
-      }).then(data => {
-        if(data.length!=COMMIT_DATA.length) {
-          COMMIT_DATA = data
+
+      Promise.all([
+        fetchCommitData(),
+        fetchStatusData(),
+      ]).then(results => {
+        const commitData = results[0]
+        const statusData = results[1]
+        if(commitData.length!=COMMIT_DATA.length) {
+          COMMIT_DATA = commitData
           populate()
         }
         CURRENT_FETCH_DATA_TIMEOUT_ID = setTimeout(fetchData, 1000)
-      });
+      })
     }
 
     const datePadding = (st: any) => {
