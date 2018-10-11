@@ -12,6 +12,8 @@ import {
   Widget, //TabBar, Title
 } from '@phosphor/widgets';
 
+import * as prettyBytes from 'pretty-bytes'
+
 import '../style/index.css';
 
 //const API_URL = 'http://127.0.0.1:8000/example.json'
@@ -30,6 +32,7 @@ var COMMIT_DATA: Commit[] = []
 var COMMIT_TOGGLE_STATES: GenericObject = {}
 var CURRENT_FETCH_DATA_TIMEOUT_ID: any = null
 var STATUS_DATA: any = {}
+//var LAST_STATUS_JSON_STRING: any = ''
 
 const plugin: JupyterLabPlugin<void> = {
   id: 'jupyterlab_dotscience_plugin',
@@ -189,11 +192,20 @@ const plugin: JupyterLabPlugin<void> = {
       return commitContainer
     }
 
+    const getFileSizeDiff = (changedFile) => changedFile.current_size - changedFile.committed_size
+
     const getStatusFilesChanged = (changedFiles) => {
       if(changedFiles.length <= 0) return ''
+
+      console.log('-------------------------------------------');
+    console.log('-------------------------------------------');
+    console.log('-------------------------------------------');
+    console.dir(prettyBytes)
+    console.log(prettyBytes(100000))
       const parts = changedFiles.map((changedFile) => {
+        const fileDiff = getFileSizeDiff(changedFile)
         return `
-<li><b>${ changedFile.filename }</b></li>
+<li><b>${ changedFile.filename }</b> (${ fileDiff } changed)</li>
         `
       }).join("\n")
 
