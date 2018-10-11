@@ -189,10 +189,32 @@ const plugin: JupyterLabPlugin<void> = {
       return commitContainer
     }
 
+    const getStatusFilesChanged = (changedFiles) => {
+      if(changedFiles.length <= 0) return ''
+      const parts = changedFiles.map((changedFile) => {
+        return `
+<li><b>${ changedFile.filename }</b></li>
+        `
+      }).join("\n")
+
+      return `
+<div>
+  <p>Changed files:</p>
+  <ul>${parts}</ul>
+</div>
+`
+    }
+
     const populateStatus = () => {
       console.log('-------------------------------------------');
       console.log('populate status')
       console.dir(STATUS_DATA)
+
+
+      const changedFileHTML = getStatusFilesChanged(STATUS_DATA.changed_files || [])
+
+      statusContent.innerHTML = changedFileHTML
+
     }
 
     const populateCommits = () => {
