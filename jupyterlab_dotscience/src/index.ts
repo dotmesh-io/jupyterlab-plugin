@@ -32,7 +32,7 @@ var COMMIT_DATA: Commit[] = []
 var COMMIT_TOGGLE_STATES: GenericObject = {}
 var CURRENT_FETCH_DATA_TIMEOUT_ID: any = null
 var STATUS_DATA: any = {}
-//var LAST_STATUS_JSON_STRING: any = ''
+var LAST_STATUS_JSON_STRING: any = ''
 
 const plugin: JupyterLabPlugin<void> = {
   id: 'jupyterlab_dotscience_plugin',
@@ -101,14 +101,25 @@ const plugin: JupyterLabPlugin<void> = {
         fetchCommitData(),
         fetchStatusData(),
       ]).then(results => {
+
+        // update the commit list if it has changed
         const commitData = results[0]
-        //const statusData = results[1]
+        
         if(commitData.length!=COMMIT_DATA.length) {
           COMMIT_DATA = commitData
           populateCommits()
         }
-        STATUS_DATA = results[1]
-        populateStatus()
+
+        // update the status if it has changed
+        const statusData = results[1]
+        const stringifiedStatusData = JSON.stringify(statusData)
+
+        if(stringifiedStatusData != LAST_STATUS_JSON_STRING) {
+          LAST_STATUS_JSON_STRING = stringifiedStatusData
+          STATUS_DATA = statusData
+          populateStatus()
+        }
+
         CURRENT_FETCH_DATA_TIMEOUT_ID = setTimeout(fetchData, 1000)
       })
     }
