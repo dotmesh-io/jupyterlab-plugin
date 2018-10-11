@@ -69,7 +69,11 @@
   
 */
 
-#dotscience-manager .dotscience-summary-file-list {
+#dotscience-manager .dotscience-error-text {
+  color: red;
+}
+
+#dotscience-manager .dotscience-summary-ul {
   padding-left: 25px;
 }
 

@@ -219,15 +219,58 @@ const plugin: JupyterLabPlugin<void> = {
       return `
 <div>
   <p>${ changedFiles.length } changed file${ changedFiles.length == 1 ? '' : 's' } (${ prettyBytes(totalBytesChanged) } changed):</p>
-  <ul>${parts}</ul>
+  <ul class="dotscience-summary-ul">${parts}</ul>
+</div>
+`
+    }
+
+    const getStatusSummary = (status, errorDetails) => {
+
+      let extra = ''
+      let statusClassname = ''
+      if(status == 'error') {
+        statusClassname = 'dotscience-error-text'
+
+        const baseErrorDetails = `
+<div class="dotscience-error-text">
+  <p> ${ errorDetails.message } </p>
+</div>
+`
+        let additionalErrorDetails = ''
+
+        if(errorDetails.type == 'json') {
+          additionalErrorDetails = `
+<ul class="dotscience-summary-ul">
+  <li>notebook: <b>${ errorDetails.notebook }</b></li>
+  <li>cell: <b>${ errorDetails.cell }</b></li>
+  <li>field: <b>${ errorDetails.field }</b></li>
+</ul>
+`
+        }
+        extra = `
+${ baseErrorDetails }
+${ additionalErrorDetails }
+`
+      }
+
+      return `
+<div>
+  <p>Status: <b class="${ statusClassname }">${ status }</b></p>
+  ${ extra }
 </div>
 `
     }
 
     const populateStatus = () => {
+      const statusSummary = getStatusSummary(STATUS_DATA.status, STATUS_DATA.error_detail)
       const changedFileHTML = getStatusFilesChanged(STATUS_DATA.changed_files || [])
 
-      statusContent.innerHTML = changedFileHTML
+      statusContent.innerHTML = `
+<div>
+${statusSummary}
+${changedFileHTML}
+</div>
+`
 
     }
 
