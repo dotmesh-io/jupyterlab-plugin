@@ -25,12 +25,32 @@
   /* This is needed so that all font sizing of children done in ems is
    * relative to this base size */
   font-size: var(--jp-ui-font-size1);
+  height: 100%;
 }
 
+#dotscience-manager .dotscience-root-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#dotscience-manager .dotscience-header {
+  flex: 0 1 auto;
+  background: var(--jp-layout-color2);
+}
+
+#dotscience-manager .dotscience-status-content {
+  flex: 0 1 auto;
+}
+
+#dotscience-manager .dotscience-commits-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
 
 #dotscience-manager header {
   border-bottom: var(--jp-border-width) solid var(--jp-border-color2);
-  flex: 0 0 auto;
+  border-top: var(--jp-border-width) solid var(--jp-border-color2);
   font-size: var(--jp-ui-font-size0);
   font-weight: 600;
   letter-spacing: 1px;
@@ -39,11 +59,11 @@
   text-transform: uppercase;
 }
 
-#dotscience-manager .dotscience-commit-top-container {
-  height: 100%;
-  overflow-y: auto;
-}
+/*
 
+  single commit classes
+  
+*/
 #dotscience-manager .dotscience-commit-container {
   padding: 12px 12px;
   border: none;

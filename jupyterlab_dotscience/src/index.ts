@@ -29,40 +29,50 @@ type Commit = {
 var COMMIT_DATA: Commit[] = []
 var COMMIT_TOGGLE_STATES: GenericObject = {}
 var CURRENT_FETCH_DATA_TIMEOUT_ID: any = null
+var STATUS_DATA: any = {}
 
 const plugin: JupyterLabPlugin<void> = {
   id: 'jupyterlab_dotscience_plugin',
   activate: (app: JupyterLab, restorer: ILayoutRestorer): void => {
     const { shell } = app;
 
-    const commitList = new Widget()
-    const header = document.createElement('header')
-    const container = document.createElement('div')
+    // make the root widget that will be added to the Jupyter UI
+    const rootWidget = new Widget()
+    rootWidget.id = 'dotscience-manager'
+    rootWidget.title.label = 'Dotscience'
 
-    container.className = 'dotscience-commit-top-container'
+    const rootContainer = document.createElement('div')
+    rootContainer.className = 'dotscience-root-container'
 
-    commitList.id = 'dotscience-manager'
-    commitList.title.label = 'Dotscience'
+    // make the status header and content elements
+    const statusHeader = document.createElement('header')
+    const statusContent = document.createElement('div')
 
-    header.textContent = 'Commits'
-    container.textContent = 'no commits'
+    statusHeader.className = 'dotscience-header'
+    statusContent.className = 'dotscience-status-content'
 
-    commitList.node.appendChild(header)
-    commitList.node.appendChild(container)
+    statusHeader.textContent = 'Status'
+    statusContent.textContent = 'loading'
 
-    shell.addToLeftArea(commitList, { rank: 50 });
+    // make the commits header and content elements
+    const commitsHeader = document.createElement('header')
+    const commitsContent = document.createElement('div')
 
-/*
-    const tabs = new TabBar<Widget>({ orientation: 'vertical' });
-    const header = document.createElement('header');
+    commitsHeader.className = 'dotscience-header'
+    commitsContent.className = 'dotscience-commits-content'
 
-    restorer.add(tabs, 'dotscience-manager');
-    tabs.id = 'dotscience-manager';
-    tabs.title.label = 'Dotscience';
-    header.textContent = 'Commits';
-    tabs.node.insertBefore(header, tabs.contentNode);
-    shell.addToLeftArea(tabs, { rank: 50 });
-*/
+    commitsHeader.textContent = 'Commits'
+    commitsContent.textContent = 'no commits'
+
+    // build up the tree of elements
+    rootContainer.appendChild(statusHeader)
+    rootContainer.appendChild(statusContent)
+    rootContainer.appendChild(commitsHeader)
+    rootContainer.appendChild(commitsContent)
+
+    rootWidget.node.appendChild(rootContainer)
+
+    shell.addToLeftArea(rootWidget, { rank: 50 });
 
     const fetchCommitData = () => {
       return fetch(COMMITS_API_URL)
@@ -89,11 +99,13 @@ const plugin: JupyterLabPlugin<void> = {
         fetchStatusData(),
       ]).then(results => {
         const commitData = results[0]
-        const statusData = results[1]
+        //const statusData = results[1]
         if(commitData.length!=COMMIT_DATA.length) {
           COMMIT_DATA = commitData
-          populate()
+          populateCommits()
         }
+        STATUS_DATA = results[1]
+        populateStatus()
         CURRENT_FETCH_DATA_TIMEOUT_ID = setTimeout(fetchData, 1000)
       })
     }
@@ -136,7 +148,7 @@ const plugin: JupyterLabPlugin<void> = {
       toggleButton.addEventListener('click', () => {
         const existingValue = COMMIT_TOGGLE_STATES[commit.Id] || false
         COMMIT_TOGGLE_STATES[commit.Id] = !existingValue
-        populate()
+        populateCommits()
       })
 
       toggleContainer.appendChild(toggleButton)
@@ -177,57 +189,28 @@ const plugin: JupyterLabPlugin<void> = {
       return commitContainer
     }
 
-    const populate = () => {
-      container.innerHTML = ''
+    const populateStatus = () => {
+      console.log('-------------------------------------------');
+      console.log('populate status')
+      console.dir(STATUS_DATA)
+    }
+
+    const populateCommits = () => {
+      commitsContent.innerHTML = ''
 
       COMMIT_DATA.forEach((commit, id) => {
         const commitContainer = getCommitContainer(commit, id)
-        container.appendChild(commitContainer)
+        commitsContent.appendChild(commitContainer)
       })
 
       const gapContainer = document.createElement('div')
       gapContainer.className = 'dotscience-bottom-gap'
 
-      container.appendChild(gapContainer)
-
-
-      /*
-      tabs.clearTabs();
-      COMMIT_DATA.forEach((commit, id) => {
-        
-
-        const tabLabel = timestampDateTitle + ' - ' + commit.Metadata.message
-        const tabTitle = new Title<Widget>({label: tabLabel, owner: tabs})
-
-        const commitInfo: Widget = new Widget()
-
-        commitInfo.id = `dotscience-commit-${id}`
-        commitInfo.title.label = tabLabel
-        commitInfo.title.closable = false
-        commitInfo.addClass('dotscience-commit-info-widget')
-
-        const containerDiv = document.createElement('div')
-        containerDiv.className = 'dotscience-commit-info-container'
-        commitInfo.node.appendChild(containerDiv)
-
-        tabs.addTab(commitInfo)
-      })
-      */
+      commitsContent.appendChild(gapContainer)
     }
 
     app.restored.then(() => {
       shell.layoutModified.connect(() => { fetchData() });
-      /*
-      tabs.tabActivateRequested.connect((sender, tab) => {
-        //shell.activateById(tab.title.owner.id);
-        console.log('-------------------------------------------');
-        console.log('-------------------------------------------');
-        console.log(`activate tab: ${tab}`)
-        console.dir(tab)
-      });
-      tabs.tabCloseRequested.connect((sender, tab) => {
-        tab.title.owner.close();
-      });*/
       fetchData()
     });
   },
