@@ -196,33 +196,24 @@ const plugin: JupyterLabPlugin<void> = {
 
     const getStatusFilesChanged = (changedFiles) => {
       if(changedFiles.length <= 0) return ''
-
-      console.log('-------------------------------------------');
-    console.log('-------------------------------------------');
-    console.log('-------------------------------------------');
-    console.dir(prettyBytes)
-    console.log(prettyBytes(100000))
       const parts = changedFiles.map((changedFile) => {
         const fileDiff = getFileSizeDiff(changedFile)
         return `
-<li><b>${ changedFile.filename }</b> (${ fileDiff } changed)</li>
+<li><b>${ changedFile.filename }</b> (${ prettyBytes(fileDiff) } changed)</li>
         `
       }).join("\n")
 
+      const totalBytesChanged = changedFiles.reduce((all, changedFile) => all + getFileSizeDiff(changedFile), 0)
+
       return `
 <div>
-  <p>Changed files:</p>
+  <p>${ changedFiles.length } changed file${ changedFiles.length == 1 ? '' : 's' } (${ prettyBytes(totalBytesChanged) } changed):</p>
   <ul>${parts}</ul>
 </div>
 `
     }
 
     const populateStatus = () => {
-      console.log('-------------------------------------------');
-      console.log('populate status')
-      console.dir(STATUS_DATA)
-
-
       const changedFileHTML = getStatusFilesChanged(STATUS_DATA.changed_files || [])
 
       statusContent.innerHTML = changedFileHTML
