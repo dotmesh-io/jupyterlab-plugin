@@ -65,6 +65,16 @@
 
 /*
 
+  status cell classes
+  
+*/
+
+#dotscience-manager .dotscience-summary-file-list {
+  padding-left: 25px;
+}
+
+/*
+
   single commit classes
   
 */
