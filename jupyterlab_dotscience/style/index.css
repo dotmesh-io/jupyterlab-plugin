@@ -41,6 +41,7 @@
 
 #dotscience-manager .dotscience-status-content {
   flex: 0 1 auto;
+  padding: 20px;
 }
 
 #dotscience-manager .dotscience-commits-content {
@@ -55,7 +56,7 @@
   font-weight: 600;
   letter-spacing: 1px;
   margin: 0px;
-  padding: 12px 0 4px 12px;
+  padding: 12px;
   text-transform: uppercase;
 }
 
