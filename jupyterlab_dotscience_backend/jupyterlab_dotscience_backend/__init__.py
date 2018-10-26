@@ -4,12 +4,11 @@ JupyterLab dotscience: proxy through to local dotscience instance
 
 from notebook.utils import url_path_join
 
-__version__ = '0.0.2'
+__version__ = '0.0.1'
 
 import os, json
 from tornado import web
 from notebook.base.handlers import APIHandler
-import requests
 
 # TODO pip3 install datadots-api==0.1.2
 from dotmesh.client import DotmeshClient, DotName
@@ -40,7 +39,6 @@ if sys.platform == "darwin":
 else:
     CLUSTER_URL = "http://" + get_default_gateway_linux() + ":32607/rpc"
 
-COMMITTER_STATUS_URL = "http://" + os.environ.get("DOTSCIENCE_COMMITTER_HOSTNAME", "committer") + "/status"
 
 def _jupyter_server_extension_paths():
     return [{
@@ -57,41 +55,27 @@ def load_jupyter_server_extension(nb_server_app):
     """
     web_app = nb_server_app.web_app
     # Prepend the base_url so that it works in a jupyterhub setting
-
-    # the /dotscience/commits endpoint will load the workspace dot commits
-    # from the dotmesh api
-
-    # the /dotscience/status endpoint will load the status from the
-    # committer endpoint
     base_url = web_app.settings['base_url']
     dotscience = url_path_join(base_url, 'dotscience')
     commits = url_path_join(dotscience, 'commits')
-    status = url_path_join(dotscience, 'status')
 
     print("=========================")
     print("Jupyter Dotscience plugin backend loaded.")
     print("base_url: %s" % (web_app.settings['base_url'],))
     print("commits: %s" % (commits,))
-    print("status: %s" % (status,))
     print("=========================")
 
-    handlers = [
-        (
-            f'{commits}{path_regex}',
-            DotmeshAPIProxy,
-            {"notebook_dir": nb_server_app.notebook_dir},
-        ),(
-            f'{status}{path_regex}',
-            CommitterStatusProxy,
-            {"notebook_dir": nb_server_app.notebook_dir},
-        )
-    ]
+    handlers = [(f'{commits}{path_regex}',
+                 DotmeshAPIProxy,
+                 {"notebook_dir": nb_server_app.notebook_dir},
+                )]
     web_app.add_handlers('.*$', handlers)
+
 
 class DotmeshAPIProxy(APIHandler):
     """
     A handler that makes API calls to dotmesh and returns the commits on the
-    configured dotscience-project dot.
+    hard-coded dotscience-project dot.
     """
 
     def initialize(self, notebook_dir):
@@ -111,7 +95,6 @@ class DotmeshAPIProxy(APIHandler):
         workspaceDot = DotName.fromDotNameWithOptionalNamespace(
             os.environ.get("DOTSCIENCE_PROJECT_DOT", "dotscience-project")
         ).name
-        print("____HERE_DOTMESH____")
         self.finish(
             json.dumps(DotmeshClient(
                 cluster_url=CLUSTER_URL,
@@ -119,24 +102,3 @@ class DotmeshAPIProxy(APIHandler):
                 api_key=os.environ.get("DOTMESH_API_KEY", "password"),
             ).getDot(workspaceDot).getBranch("master").log())
         )
-
-class CommitterStatusProxy(APIHandler):
-    """
-    A handler that makes API calls to the committer to get it's current status
-    """
-
-    def initialize(self, notebook_dir):
-        # Not sure if we need this, but it might come in handy.
-        self.notebook_dir = notebook_dir
-
-    # TODO make this asynchronous so that it doesn't block jupyter server on
-    # making API calls to the committer
-    # @gen.coroutine
-    def get(self, path=''):
-        """
-        Get the current status of the committer
-        """
-        print("____HERE_COMMITTER____")
-        r = requests.get(COMMITTER_STATUS_URL)
-        self.finish(json.dumps(r.json()))
-
