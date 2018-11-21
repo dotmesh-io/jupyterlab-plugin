@@ -224,6 +224,25 @@ const plugin: JupyterLabPlugin<void> = {
 `
     }
 
+    const getStatusUnknownFiles = (changedFiles) => {
+      const unknownFiles = changedFiles.filter(changedFile => changedFile.status == 'unknown')
+      if(unknownFiles.length <= 0) return ''
+
+      const parts = unknownFiles.map((changedFile) => {
+        return `
+<li><b>${ changedFile.filename }</b></li>
+        `
+      }).join("\n")
+
+      return `
+<div>
+  <p>${ unknownFiles.length } unknown file${ unknownFiles.length == 1 ? '' : 's' }:</p>
+  <ul class="dotscience-summary-ul">${parts}</ul>
+  <p>Please use the <a target="_blank" href="https://github.com/dotmesh-io/dotscience-python">Dotscience Python Library</a> to annotate these files!</p>
+</div>
+`
+    }
+
     const getStatusSummary = (status, errorDetails) => {
 
       let extra = ''
@@ -264,11 +283,13 @@ ${ additionalErrorDetails }
     const populateStatus = () => {
       const statusSummary = getStatusSummary(STATUS_DATA.status, STATUS_DATA.error_detail)
       const changedFileHTML = getStatusFilesChanged(STATUS_DATA.changed_files || [])
+      const unknownFileHTML = getStatusUnknownFiles(STATUS_DATA.changed_files || [])
 
       statusContent.innerHTML = `
 <div>
 ${statusSummary}
 ${changedFileHTML}
+${unknownFileHTML}
 </div>
 `
 
