@@ -108,10 +108,12 @@ class DotmeshAPIProxy(APIHandler):
         # Just use the name of the workspace dot (rather than including the
         # namespace) because it's cloned locally under the admin account. See
         # https://github.com/dotmesh-io/dotscience-agent/issues/70
+
+        dotname = os.environ.get("DOTSCIENCE_PROJECT_DOT", "dotscience-project")
         workspaceDot = DotName.fromDotNameWithOptionalNamespace(
-            os.environ.get("DOTSCIENCE_PROJECT_DOT", "dotscience-project")
+            dotname
         ).name
-        print("____HERE_DOTMESH____")
+        print("Loading logs for dot: %s from url: %s" % (dotname, CLUSTER_URL))
         self.finish(
             json.dumps(DotmeshClient(
                 cluster_url=CLUSTER_URL,
@@ -136,7 +138,8 @@ class CommitterStatusProxy(APIHandler):
         """
         Get the current status of the committer
         """
-        print("____HERE_COMMITTER____")
+        print("Loading committer status from url: %s" % (COMMITTER_STATUS_URL))
         r = requests.get(COMMITTER_STATUS_URL)
+        print(json.dumps(r.json()))
         self.finish(json.dumps(r.json()))
 
