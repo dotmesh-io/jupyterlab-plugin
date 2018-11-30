@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "noEmitOnError": true,
     "noUnusedLocals": true,
+    "allowSyntheticDefaultImports": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "ES5",
