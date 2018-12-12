@@ -102,6 +102,12 @@ const plugin: JupyterLabPlugin<void> = {
         fetchStatusData(),
       ]).then(results => {
 
+
+        console.log('-------------------------------------------');
+        console.log('-------------------------------------------');
+        console.dir('data')
+        console.dir(results)
+
         // update the commit list if it has changed
         const commitData = results[0]
         
@@ -203,7 +209,26 @@ const plugin: JupyterLabPlugin<void> = {
       return commitContainer
     }
 
-    const getFileSizeDiff = (changedFile) => changedFile.current_size - changedFile.committed_size
+    const getFileSizeDiff = (changedFile) => Math.abs(changedFile.current_size - changedFile.committed_size)
+
+    const getNotebookSummary = (notebooks) => {
+      const notebookNames = Object.keys(notebooks)
+      if(notebookNames.length <= 0) return ''
+
+      const parts = notebookNames.map((name) => {
+        const runCount = notebooks[name].runs
+        return `
+<li><b>${ name }</b> (${ runCount } run${ runCount == 1 ? '' : 's'})</li>
+        `
+      }).join("\n")
+
+      return `
+<div>
+  <p>${ notebookNames.length } notebook${ notebookNames.length == 1 ? '' : 's' }:</p>
+  <ul class="dotscience-summary-ul">${parts}</ul>
+</div>
+`
+    }
 
     const getStatusFilesChanged = (changedFiles) => {
       if(changedFiles.length <= 0) return ''
@@ -224,13 +249,12 @@ const plugin: JupyterLabPlugin<void> = {
 `
     }
 
-    const getStatusUnknownFiles = (changedFiles) => {
-      const unknownFiles = changedFiles.filter(changedFile => changedFile.status == 'unknown')
+    const getStatusUnknownFiles = (unknownFiles) => {
       if(unknownFiles.length <= 0) return ''
 
-      const parts = unknownFiles.map((changedFile) => {
+      const parts = unknownFiles.map((unknownFile) => {
         return `
-<li><b>${ changedFile.filename }</b></li>
+<li><b>${ unknownFile.filename }</b></li>
         `
       }).join("\n")
 
@@ -238,6 +262,7 @@ const plugin: JupyterLabPlugin<void> = {
 <div>
   <p>${ unknownFiles.length } unknown file${ unknownFiles.length == 1 ? '' : 's' }:</p>
   <ul class="dotscience-summary-ul">${parts}</ul>
+  <hr />
   <p>Please use the <a target="_blank" href="https://github.com/dotmesh-io/dotscience-python">Dotscience Python Library</a> to annotate these files!</p>
 </div>
 `
@@ -282,12 +307,14 @@ ${ additionalErrorDetails }
 
     const populateStatus = () => {
       const statusSummary = getStatusSummary(STATUS_DATA.status, STATUS_DATA.error_detail)
+      const notebookSummary = getNotebookSummary(STATUS_DATA.notebooks)
       const changedFileHTML = getStatusFilesChanged(STATUS_DATA.changed_files || [])
-      const unknownFileHTML = getStatusUnknownFiles(STATUS_DATA.changed_files || [])
+      const unknownFileHTML = getStatusUnknownFiles(STATUS_DATA.unclaimed_files || [])
 
       statusContent.innerHTML = `
 <div>
 ${statusSummary}
+${notebookSummary}
 ${changedFileHTML}
 ${unknownFileHTML}
 </div>
