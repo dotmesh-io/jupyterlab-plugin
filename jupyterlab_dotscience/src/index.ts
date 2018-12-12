@@ -102,12 +102,6 @@ const plugin: JupyterLabPlugin<void> = {
         fetchStatusData(),
       ]).then(results => {
 
-
-        console.log('-------------------------------------------');
-        console.log('-------------------------------------------');
-        console.dir('data')
-        console.dir(results)
-
         // update the commit list if it has changed
         const commitData = results[0]
         
@@ -254,7 +248,7 @@ const plugin: JupyterLabPlugin<void> = {
 
       const parts = unknownFiles.map((unknownFile) => {
         return `
-<li><b>${ unknownFile.filename }</b></li>
+<li><b>${ unknownFile }</b></li>
         `
       }).join("\n")
 
