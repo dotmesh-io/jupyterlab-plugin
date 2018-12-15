@@ -77,11 +77,11 @@ def load_jupyter_server_extension(nb_server_app):
 
     handlers = [
         (
-            f'{commits}{path_regex}',
+            commits+path_regex,
             DotmeshAPIProxy,
             {"notebook_dir": nb_server_app.notebook_dir},
         ),(
-            f'{status}{path_regex}',
+            status+path_regex,
             CommitterStatusProxy,
             {"notebook_dir": nb_server_app.notebook_dir},
         )
