@@ -101,7 +101,6 @@ const plugin: JupyterLabPlugin<void> = {
         fetchCommitData(),
         fetchStatusData(),
       ]).then(results => {
-
         // update the commit list if it has changed
         const commitData = results[0]
         
@@ -121,6 +120,13 @@ const plugin: JupyterLabPlugin<void> = {
         }
 
         CURRENT_FETCH_DATA_TIMEOUT_ID = setTimeout(fetchData, 1000)
+      }).catch(error => {
+        console.log(error)
+        STATUS_DATA = {status: "error",
+        error_detail: [{
+          message: "The committer crashed!!! This is fatal. You should restart your task."
+        }]}
+        populateStatus()
       })
     }
 
@@ -265,6 +271,9 @@ const plugin: JupyterLabPlugin<void> = {
     const getStatusSummary = (status, errorDetails) => {
       let statusClassname = ''
       let errorString = ``
+      if(status == 'error') {
+        statusClassname = "dotscience-error-text"
+      }
       if(errorDetails.length > 0) {
         for(let error in errorDetails) {
           errorString += `
