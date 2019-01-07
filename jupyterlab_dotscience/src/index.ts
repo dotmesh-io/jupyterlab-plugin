@@ -266,10 +266,6 @@ const plugin: JupyterLabPlugin<void> = {
       let statusClassname = ''
       let errorString = ``
       if(errorDetails.length > 0) {
-        errorString += `
-          <div class="dotscience-error-text">
-              <p><b>During processing the following errors occurred:</b></p>
-            </div>`
         for(let error in errorDetails) {
           errorString += `
             <div class="dotscience-error-text">
