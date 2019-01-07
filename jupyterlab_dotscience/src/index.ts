@@ -263,45 +263,38 @@ const plugin: JupyterLabPlugin<void> = {
     }
 
     const getStatusSummary = (status, errorDetails) => {
-
-      let extra = ''
       let statusClassname = ''
-      if(status == 'error') {
-        statusClassname = 'dotscience-error-text'
-
-        const baseErrorDetails = `
-<div class="dotscience-error-text">
-  <p> ${ errorDetails.message } </p>
-</div>
-`
-        let additionalErrorDetails = ''
-
-        if(errorDetails.type == 'json') {
-          additionalErrorDetails = `
-<ul class="dotscience-summary-ul">
-  <li>notebook: <b>${ errorDetails.notebook }</b></li>
-  <li>cell: <b>${ errorDetails.cell }</b></li>
-  <li>field: <b>${ errorDetails.field }</b></li>
-</ul>
-`
-        }
-        extra = `
-${ baseErrorDetails }
-${ additionalErrorDetails }
-`
+      let errorString = ``
+      if(errorDetails.length > 0) {
+        for(let error in errorDetails) {
+          errorString += `
+            <div class="dotscience-error-text">
+              <p> ${ errorDetails[error].message } </p>
+            </div>`
+          if(errorDetails[error].type == 'json') {
+            errorString += `
+              <ul class="dotscience-summary-ul">
+                <li>notebook: <b>${ errorDetails[error].notebook }</b></li>
+                <li>cell: <b>${ errorDetails[error].cell }</b></li>
+                <li>field: <b>${ errorDetails[error].field }</b></li>
+              </ul>
+              `
+          }
       }
-
-      return `
-<div>
-  <p>Status: <b class="${ statusClassname }">${ status }</b></p>
-  ${ extra }
-</div>
-`
     }
+        
+
+    return `
+      <div>
+        <p>Status: <b class="${ statusClassname }">${ status }</b></p>
+        ${ errorString }
+      </div>
+      `
+  }
 
     const populateStatus = () => {
       const statusSummary = getStatusSummary(STATUS_DATA.status, STATUS_DATA.error_detail)
-      const notebookSummary = getNotebookSummary(STATUS_DATA.notebooks)
+      const notebookSummary = getNotebookSummary(STATUS_DATA.notebooks || [])
       const changedFileHTML = getStatusFilesChanged(STATUS_DATA.changed_files || [])
       const unknownFileHTML = getStatusUnknownFiles(STATUS_DATA.unclaimed_files || [])
 
