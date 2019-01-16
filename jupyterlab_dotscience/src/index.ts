@@ -124,7 +124,7 @@ const plugin: JupyterLabPlugin<void> = {
         console.log(error)
         STATUS_DATA = {status: "error",
         error_detail: [{
-          message: "The committer crashed!!! This is fatal. You should restart your task."
+          message: "An error has occurred and changes are not being saved in Dotscience. Please restart JupyterLab to fix this issue."
         }]}
         populateStatus()
       })
