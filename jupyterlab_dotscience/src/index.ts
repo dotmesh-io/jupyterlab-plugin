@@ -276,18 +276,19 @@ const plugin: JupyterLabPlugin<void> = {
       }
       if(errorDetails.length > 0) {
         for(let error in errorDetails) {
-          errorString += `
-            <div class="dotscience-error-text">
-              <p> ${ errorDetails[error].message } </p>
-            </div>`
+          let errorMsg = 'Something went wrong on your runner - please contact support@dotscience.com or restart Jupyter'
           if(errorDetails[error].type == 'json') {
+            if(errorDetails[error].cell != undefined) {
+              errorMsg = `Dotscience has output invalid JSON in ${ errorDetails[error].notebook }, cell ${ errorDetails[error].cell }. This is an error, please contact support@dotscience.com`
+            } else {
+              errorMsg = `We couldn't read the notebook ${ errorDetails[error].notebook }, please check it is saved in the correct JSON format.`
+            }
+            
             errorString += `
-              <ul class="dotscience-summary-ul">
-                <li>notebook: <b>${ errorDetails[error].notebook }</b></li>
-                <li>cell: <b>${ errorDetails[error].cell }</b></li>
-                <li>field: <b>${ errorDetails[error].field }</b></li>
-              </ul>
-              `
+            <div class="dotscience-error-text">
+              <p> ${errorMsg} </p>
+            </div>
+            <hr>`
           }
       }
     }
