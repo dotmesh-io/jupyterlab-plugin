@@ -4,7 +4,7 @@ JupyterLab dotscience: proxy through to local dotscience instance
 
 from notebook.utils import url_path_join
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
 import os, json
 from tornado import web
