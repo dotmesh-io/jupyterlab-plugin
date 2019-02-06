@@ -121,6 +121,7 @@ const plugin: JupyterLabPlugin<void> = {
 
         CURRENT_FETCH_DATA_TIMEOUT_ID = setTimeout(fetchData, 1000)
       }).catch(error => {
+        console.log('an error occured loading the data from the committer')
         console.log(error)
         STATUS_DATA = {status: "error",
         error_detail: [{
@@ -271,6 +272,7 @@ const plugin: JupyterLabPlugin<void> = {
     const getStatusSummary = (status, errorDetails) => {
       let statusClassname = ''
       let errorString = ``
+      errorDetails = errorDetails || []
       if(status == 'error') {
         statusClassname = "dotscience-error-text"
       }
