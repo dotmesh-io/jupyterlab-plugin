@@ -109,7 +109,7 @@ class DotmeshAPIProxy(APIHandler):
         # namespace) because it's cloned locally under the admin account. See
         # https://github.com/dotmesh-io/dotscience-agent/issues/70
 
-        dotname = os.environ.get("DOTSCIENCE_PROJECT_DOT", "dotscience-project")
+        dotname = os.environ.get("DOTSCIENCE_PROJECT_DOT_LOCAL", "dotscience-project")
         workspaceDot = DotName.fromDotNameWithOptionalNamespace(
             dotname
         ).name
