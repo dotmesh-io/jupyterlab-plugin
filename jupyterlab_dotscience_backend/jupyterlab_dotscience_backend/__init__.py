@@ -105,11 +105,14 @@ class DotmeshAPIProxy(APIHandler):
         """
         Get the commits on the dotscience-project dot.
         """
-        # DOTSCIENCE_PROJECT_DOT could have the namespace so use that to identify the local dot
+        # Just use the name of the workspace dot (rather than including the
+        # namespace) because it's cloned locally under the admin account. See
+        # https://github.com/dotmesh-io/dotscience-agent/issues/70
+
         dotname = os.environ.get("DOTSCIENCE_PROJECT_DOT", "dotscience-project")
         workspaceDot = DotName.fromDotNameWithOptionalNamespace(
             dotname
-        )
+        ).name
         print("Loading logs for dot: %s from url: %s" % (dotname, CLUSTER_URL))
         self.finish(
             json.dumps(DotmeshClient(
