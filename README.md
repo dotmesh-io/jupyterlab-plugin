@@ -23,7 +23,7 @@ If you for any reason need to manually deploy to only npm and pypi, you need to 
 | `PYPI_USER` | fred | the username we use to access pypi. Should be in gitlab-ci. |
 | `PYPI_PASSWORD` | passw0rd | the password for pypi |
 | `NPM_TOKEN` | something-separated-by-dashes | the token for npm. Get it from gitlab-ci or set up your own account and ping Charlotte to add you |
-| `CI_COMMIT_TAG` | 0.0.5 | the version to use when releasing the npm package. This should match to a tag in git - if you don't match them then the versions may differ between what's released on pypi and what's released on npm, as the pypi release process pulls the tag from git. |
+| `CI_COMMIT_TAG` | 0.0.5 | the version to use when releasing the npm package. This should match to a tag in git - if you don't match them then the versions may differ between what's released on pypi and what's released on npm, as the pypi release process pulls the tag from git. Also note this _must_ be a semantic version, otherwise the release will fail :/ |
 
 then run
 ```
