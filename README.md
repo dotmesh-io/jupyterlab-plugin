@@ -2,8 +2,11 @@
 
 A JupyterLab extension which enables data & model versioning and summary statistics tracking.
 
-See [dotscience](https://github.com/dotmesh-io/dotscience) for more details.
+See [dotscience](https://dotscience.com) for more details.
 
+## Deployment
+This plugin is in two parts - the frontend and the backend.
+The frontend is deployed to npm, the backend to pypi. Both will have an associated git tag at the time of release, which will be used to ping [jupyterlab-tensorflow]() to rebuild the docker image with the latest releases.
 # Run Jupyter lab on your host
 
 ```
@@ -30,11 +33,4 @@ jupyter labextension install jupyterlab_dotscience --no-build
 
 ## Summary statistics
 
-An example of outputting summary statistics from a Jupyterlab Notebook cell:
-
-```python
-import json
-print('DOTSCIENCE_SUMMARY=' + json.dumps({
-    "apples":10
-}))
-```
+For python applications look at the [dotscience-python](https://pypi.org/project/dotscience/) library. For other languages we do not yet have a library, but this [specification](https://docs.dotscience.com/references/run-metadata-format/#basic-structure) should give you some idea what is expected.
