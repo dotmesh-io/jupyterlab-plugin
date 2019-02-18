@@ -42,6 +42,10 @@ else:
 
 COMMITTER_STATUS_URL = "http://" + os.environ.get("DOTSCIENCE_COMMITTER_HOSTNAME", "committer") + "/status"
 
+def log_stdout(text):
+  if os.getenv("TASK.DEBUG_LOGGING") != "" and os.getenv("TASK.DEBUG_LOGGING") is not None:
+    print(text)
+  
 def _jupyter_server_extension_paths():
     return [{
         'module': 'jupyterlab_dotscience_backend'
@@ -113,7 +117,7 @@ class DotmeshAPIProxy(APIHandler):
         workspaceDot = DotName.fromDotNameWithOptionalNamespace(
             dotname
         ).name
-        print("Loading logs for dot: %s from url: %s" % (dotname, CLUSTER_URL))
+        log_stdout("Loading logs for dot: %s from url: %s" % (dotname, CLUSTER_URL))
         self.finish(
             json.dumps(DotmeshClient(
                 cluster_url=CLUSTER_URL,
@@ -138,8 +142,8 @@ class CommitterStatusProxy(APIHandler):
         """
         Get the current status of the committer
         """
-        print("Loading committer status from url: %s" % (COMMITTER_STATUS_URL))
+        log_stdout("Loading committer status from url: %s" % (COMMITTER_STATUS_URL))
         r = requests.get(COMMITTER_STATUS_URL)
-        print(json.dumps(r.json()))
+        log_stdout(json.dumps(r.json()))
         self.finish(json.dumps(r.json()))
 
