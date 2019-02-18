@@ -14,7 +14,7 @@ echo "### Building base container"
 
 BASE=dotscience-python-base:$CI_DOCKER_TAG
 
-docker build -t $BASE -f Dockerfile.base .
+docker build -t $BASE -f Dockerfile.python.build .
 
 echo "### Shipping package to PyPi"
 

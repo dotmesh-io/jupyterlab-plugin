@@ -1,0 +1,19 @@
+{
+  "name": "@dotscience/jupyterlab-plugin",
+  "version": "0.0.2",
+  "description": "jupyterlab plugin for using dotscience",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dotmesh-io/jupyterlab-plugin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dotmesh-io/jupyterlab-plugin/issues"
+  },
+  "homepage": "https://github.com/dotmesh-io/jupyterlab-plugin#readme"
+}
