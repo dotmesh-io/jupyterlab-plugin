@@ -14,7 +14,7 @@ deploy_npm:
     - ubuntu-bionic
     - fast
   script:
-    - npm publish jupyterlab_dotscience --tag $CI_COMMIT_TAG
+    - ./shipit-npm.sh -u $NPM_USER -p $NPM_PASSWORD
   only:
     - tags
 
