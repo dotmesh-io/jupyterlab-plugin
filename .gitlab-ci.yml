@@ -14,7 +14,7 @@ deploy_npm:
     - ubuntu-bionic
     - fast
   script:
-    - ./shipit-npm.sh $NPM_TOKEN
+    - ./scripts/shipit-npm.sh $NPM_TOKEN
   only:
     - tags
 
@@ -25,7 +25,7 @@ deploy_pypi:
     - ubuntu-bionic
     - fast
   script:
-    - ./shipit-pypi.sh -u $PYPI_USER -p $PYPI_PASSWORD
+    - ./scripts/shipit-pypi.sh -u $PYPI_USER -p $PYPI_PASSWORD
   only:
     - tags
 
