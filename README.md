@@ -14,6 +14,7 @@ git tag <some-semver>
 git push --tags
 ```
 but if you for any reason need to manually deploy, you need to have the following variables in your environment:
+
 | Name  	|  Example 	|   Description	|
 |--------------------------	|---------------------	|---------------------	|
 | `PYPI_USER` | fred | the username we use to access pypi. Should be in gitlab-ci. |
