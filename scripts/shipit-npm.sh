@@ -8,7 +8,7 @@ then
     CI_DOCKER_TAG=latest
 fi
 
-NPM_ARGS="$@"
+NPM_TOKEN="$@"
 
 echo "### Building base container"
 
@@ -18,4 +18,4 @@ docker build -t $BASE -f Dockerfile.js.build .
 
 echo "### Shipping package to npm"
 
-docker run $BASE /bin/bash -c "cd dsbuild ; npm login $NPM_ARGS; npm version from-git; npm publish jupyterlab_dotscience --access public"
+docker run $BASE /bin/bash -c "cd dsbuild/jupyterlab_dotscience ; npm login $NPM_ARGS; npm version from-git; npm run build; echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}'>.npmrc; npm publish --access public"
