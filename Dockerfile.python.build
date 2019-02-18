@@ -4,7 +4,7 @@ FROM python:3
 RUN apt-get update && apt-get install git
 RUN mkdir dsbuild
 COPY .git ./dsbuild/.git
-COPY ./jupyterlab_dotscience_backend/gitattributes ./dsbuild
+COPY ./jupyterlab_dotscience_backend/.gitattributes ./dsbuild
 COPY ./jupyterlab_dotscience_backend/jupyterlab_dotscience_backend ./dsbuild/jupyterlab_dotscience_backend
 COPY ./jupyterlab_dotscience_backend/setup.py ./dsbuild
 COPY ./jupyterlab_dotscience_backend/README.md ./dsbuild
