@@ -7,6 +7,23 @@ See [dotscience](https://dotscience.com) for more details.
 ## Deployment
 This plugin is in two parts - the frontend and the backend.
 The frontend is deployed to npm, the backend to pypi. Both will have an associated git tag at the time of release, which will be used to ping [jupyterlab-tensorflow]() to rebuild the docker image with the latest releases.
+
+To deploy the components you should generally just follow:
+```
+git tag <some-semver>
+git push --tags
+```
+but if you for any reason need to manually deploy, you need to have the following variables in your environment:
+| Name  	|  Example 	|   Description	|
+|--------------------------	|---------------------	|---------------------	|
+| `PYPI_USER` | fred | the username we use to access pypi. Should be in gitlab-ci. |
+| `PYPI_PASSWORD` | passw0rd | the password for pypi |
+
+then run
+```
+./shipit-pypi.sh
+./shipit-npm.sh
+```
 # Run Jupyter lab on your host
 
 ```
