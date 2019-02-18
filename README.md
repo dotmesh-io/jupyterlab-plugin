@@ -6,25 +6,34 @@ See [dotscience](https://dotscience.com) for more details.
 
 ## Deployment
 This plugin is in two parts - the frontend and the backend.
-The frontend is deployed to npm, the backend to pypi. Both will have an associated git tag at the time of release, which will be used to ping [jupyterlab-tensorflow]() to rebuild the docker image with the latest releases.
+The frontend is deployed to npm, the backend to pypi.
 
-To deploy the components you should generally just follow:
+To deploy the components automatically you should generally just follow:
 ```
 git tag <some-semver>
 git push --tags
 ```
-but if you for any reason need to manually deploy, you need to have the following variables in your environment:
+
+This will then trigger `jupyterlab-tensorflow`'s gitlab pipeline, which will pull the tag from what you fed to git, install from npm and pypi and use the tag to form part of the final docker tag. After that it will trigger `e2e`'s gitlab pipeline and assuming it all passes, release to `latest`.
+
+If you for any reason need to manually deploy to only npm and pypi, you need to have the following variables in your environment:
 
 | Name  	|  Example 	|   Description	|
 |--------------------------	|---------------------	|---------------------	|
 | `PYPI_USER` | fred | the username we use to access pypi. Should be in gitlab-ci. |
 | `PYPI_PASSWORD` | passw0rd | the password for pypi |
+| `NPM_TOKEN` | something-separated-by-dashes | the token for npm. Get it from gitlab-ci or set up your own account and ping Charlotte to add you |
+| `CI_COMMIT_TAG` | 0.0.5 | the version to use when releasing the npm package. This should match to a tag in git - if you don't match them then the versions may differ between what's released on pypi and what's released on npm, as the pypi release process pulls the tag from git. |
 
 then run
 ```
-./shipit-pypi.sh
-./shipit-npm.sh
+./shipit-pypi.sh -u $PYPI_USER -p $PYPI_PASSWORD
+./shipit-npm.sh $NPM_TOKEN
 ```
+
+You will then need to trigger the docker image repo manually if necessary (see `.gitlab-ci.yml`)
+
+
 # Run Jupyter lab on your host
 
 ```
