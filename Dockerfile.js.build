@@ -4,5 +4,5 @@ FROM node:6
 RUN apt-get update && apt-get install git
 RUN mkdir dsbuild
 COPY ./jupyterlab_dotscience ./dsbuild/jupyterlab_dotscience
-COPY .git ./dsbuild/jupyterlab_dotscience/.git
+COPY .git ./dsbuild/.git
 
