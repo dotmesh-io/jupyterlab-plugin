@@ -18,4 +18,4 @@ docker build -t $BASE -f Dockerfile.js.build .
 
 echo "### Shipping package to npm"
 
-docker run $BASE /bin/bash -c "cd dsbuild/jupyterlab_dotscience; mkdir .git ; npm login $NPM_ARGS; npm version from-git; npm run build; echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}'>.npmrc; npm publish --access public"
+docker run $BASE /bin/bash -c "cd dsbuild/jupyterlab_dotscience; mkdir .git ; npm version from-git; npm run build; echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}'>.npmrc; npm publish --access public"
