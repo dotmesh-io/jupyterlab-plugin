@@ -38,7 +38,7 @@ if sys.platform == "darwin":
     # (dev mode)
     CLUSTER_URL = "http://127.0.0.1:32607/rpc"
 else:
-    CLUSTER_URL = "http://" + get_default_gateway_linux() + ":32607/rpc"
+    CLUSTER_URL = "http://dotmesh-server-inner:32607/rpc"
 
 COMMITTER_STATUS_URL = "http://" + os.environ.get("DOTSCIENCE_COMMITTER_HOSTNAME", "committer") + "/status"
 
