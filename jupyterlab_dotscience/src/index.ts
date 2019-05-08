@@ -238,37 +238,37 @@ const plugin: JupyterLabPlugin<void> = {
 `
     }
 
-    const getStatusFilesChanged = (changedFiles) => {
+    const getStatusFilesChanged = (changedFiles, moreChangedFiles) => {
       if(changedFiles.length <= 0) return ''
       const parts = changedFiles.map((changedFile) => {
         const fileDiff = getFileSizeDiff(changedFile)
         return `
 <li><b>${ changedFile.filename }</b> (${ prettyBytes(fileDiff) } changed)</li>
         `
-      }).join("\n")
+      }).join("\n") + (moreChangedFiles == 0 ? '' : (' and ' + moreChangedFiles + ' more'))
 
       const totalBytesChanged = changedFiles.reduce((all, changedFile) => all + getFileSizeDiff(changedFile), 0)
 
       return `
 <div>
-  <p>${ changedFiles.length } changed file${ changedFiles.length == 1 ? '' : 's' } (${ prettyBytes(totalBytesChanged) } changed):</p>
+  <p>${ changedFiles.length + moreChangedFiles } changed file${ changedFiles.length == 1 ? '' : 's' } (${ prettyBytes(totalBytesChanged) } changed):</p>
   <ul class="dotscience-summary-ul">${parts}</ul>
 </div>
 `
     }
 
-    const getStatusUnknownFiles = (unknownFiles) => {
+    const getStatusUnknownFiles = (unknownFiles, moreUnknownFiles) => {
       if(unknownFiles.length <= 0) return ''
 
       const parts = unknownFiles.map((unknownFile) => {
         return `
 <li><b>${ unknownFile }</b></li>
         `
-      }).join("\n")
+      }).join("\n") + (moreUnknownFiles == 0 ? '' : (' and ' + moreUnknownFiles + ' more'))
 
       return `
 <div>
-  <p>${ unknownFiles.length } unknown file${ unknownFiles.length == 1 ? '' : 's' }:</p>
+  <p>${ unknownFiles.length + moreUnknownFiles } unknown file${ unknownFiles.length == 1 ? '' : 's' }:</p>
   <ul class="dotscience-summary-ul">${parts}</ul>
   <hr />
   <p>Please use the <a target="_blank" href="https://github.com/dotmesh-io/dotscience-python">Dotscience Python Library</a> to annotate these files!</p>
@@ -314,8 +314,8 @@ const plugin: JupyterLabPlugin<void> = {
     const populateStatus = () => {
       const statusSummary = getStatusSummary(STATUS_DATA.status, STATUS_DATA.error_detail)
       const notebookSummary = getNotebookSummary(STATUS_DATA.notebooks || [])
-      const changedFileHTML = getStatusFilesChanged(STATUS_DATA.changed_files || [])
-      const unknownFileHTML = getStatusUnknownFiles(STATUS_DATA.unclaimed_files || [])
+      const changedFileHTML = getStatusFilesChanged(STATUS_DATA.changed_files || [], STATUS_DATA.more_changed_files || 0)
+      const unknownFileHTML = getStatusUnknownFiles(STATUS_DATA.unclaimed_files || [], STATUS_DATA.more_unclaimed_files || 0)
 
       statusContent.innerHTML = `
 <div>
