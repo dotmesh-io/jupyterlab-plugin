@@ -12,7 +12,7 @@ import {
   Widget, //TabBar, Title
 } from '@phosphor/widgets';
 
-import * as prettyBytes from 'pretty-bytes'
+// import * as prettyBytes from 'pretty-bytes'
 
 import '../style/index.css';
 
@@ -215,9 +215,7 @@ const plugin: JupyterLabPlugin<void> = {
       commitContainer.appendChild(metadataContainer)
 
       return commitContainer
-    }
-
-    const getFileSizeDiff = (changedFile) => Math.abs(changedFile.current_size - changedFile.committed_size)
+    }   
 
     const getNotebookSummary = (notebooks) => {
       const notebookNames = Object.keys(notebooks)
@@ -240,18 +238,15 @@ const plugin: JupyterLabPlugin<void> = {
 
     const getStatusFilesChanged = (changedFiles, moreChangedFiles) => {
       if(changedFiles.length <= 0) return ''
-      const parts = changedFiles.map((changedFile) => {
-        const fileDiff = getFileSizeDiff(changedFile)
+      const parts = changedFiles.map((changedFile) => {        
         return `
-<li><b>${ changedFile.filename }</b> (${ prettyBytes(fileDiff) } changed)</li>
+<li><b>${ changedFile.filename }</b> (${ changedFile.file_status })</li>
         `
-      }).join("\n") + (moreChangedFiles == 0 ? '' : (' and ' + moreChangedFiles + ' more'))
-
-      const totalBytesChanged = changedFiles.reduce((all, changedFile) => all + getFileSizeDiff(changedFile), 0)
+      }).join("\n") + (moreChangedFiles == 0 ? '' : (' and ' + moreChangedFiles + ' more'))     
 
       return `
 <div>
-  <p>${ changedFiles.length + moreChangedFiles } changed file${ changedFiles.length == 1 ? '' : 's' } (${ prettyBytes(totalBytesChanged) } changed):</p>
+  <p>${ changedFiles.length + moreChangedFiles } changed file${ changedFiles.length == 1 ? '' : 's' }:</p>
   <ul class="dotscience-summary-ul">${parts}</ul>
 </div>
 `
