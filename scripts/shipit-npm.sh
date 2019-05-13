@@ -2,7 +2,7 @@
 
 set -ex
 
-if [ x$CI_DOCKER_TAG == x ]
+if [[ x$CI_DOCKER_TAG == x ]]
 then
     # Non-CI build
     CI_DOCKER_TAG=latest
