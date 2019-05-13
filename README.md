@@ -61,4 +61,3 @@ jupyter labextension install jupyterlab_dotscience --no-build
 ## Summary statistics
 
 For python applications look at the [dotscience-python](https://pypi.org/project/dotscience/) library. For other languages we do not yet have a library, but this [specification](https://docs.dotscience.com/references/run-metadata-format/#basic-structure) should give you some idea what is expected.
-
