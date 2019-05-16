@@ -292,19 +292,24 @@ const plugin: JupyterLabPlugin<void> = {
             <div class="dotscience-error-text">
               <p> ${errorMsg} </p>
             </div>
-            <hr>`
+            <hr />`
+          } else {
+            errorString += `
+            <div class="dotscience-error-text">
+              <p> ${errorDetails[error].message} </p>
+            </div>
+            <hr />`
           }
+        }
       }
-    }
-        
-
-    return `
-      <div>
-        <p>Status: <b class="${ statusClassname }">${ status }</b></p>
-        ${ errorString }
-      </div>
-      `
-  }
+  
+      return `
+        <div>
+          <p>Status: <b class="${ statusClassname }">${ status }</b></p>
+          ${ errorString }
+        </div>
+        `
+      }
 
     const populateStatus = () => {
       const statusSummary = getStatusSummary(STATUS_DATA.status, STATUS_DATA.error_detail)
