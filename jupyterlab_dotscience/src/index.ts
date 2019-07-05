@@ -82,7 +82,7 @@ const plugin: JupyterLabPlugin<void> = {
 
     rootWidget.node.appendChild(rootContainer)
 
-    shell.addToLeftArea(rootWidget, { rank: 50 });
+    shell.add(rootWidget, "left", { rank: 50 });
 
     const fetchCommitData = () => {
       return fetch(COMMITS_API_URL)
