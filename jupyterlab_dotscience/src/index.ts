@@ -1,5 +1,5 @@
 import {
-  ILayoutRestorer, JupyterLab, JupyterLabPlugin
+  ILayoutRestorer, JupyterLab, JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
 /*
