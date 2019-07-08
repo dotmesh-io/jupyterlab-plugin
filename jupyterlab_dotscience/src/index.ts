@@ -1,5 +1,5 @@
 import {
-  ILayoutRestorer, JupyterLab, JupyterLabPlugin
+  ILayoutRestorer, JupyterLab, JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
 /*
@@ -34,7 +34,7 @@ var CURRENT_FETCH_DATA_TIMEOUT_ID: any = null
 var STATUS_DATA: any = {}
 var LAST_STATUS_JSON_STRING: any = ''
 
-const plugin: JupyterLabPlugin<void> = {
+const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab_dotscience_plugin',
   activate: (app: JupyterLab, restorer: ILayoutRestorer): void => {
     const { shell } = app;
@@ -82,7 +82,7 @@ const plugin: JupyterLabPlugin<void> = {
 
     rootWidget.node.appendChild(rootContainer)
 
-    shell.addToLeftArea(rootWidget, { rank: 50 });
+    shell.add(rootWidget, "left", { rank: 50 });
 
     const fetchCommitData = () => {
       return fetch(COMMITS_API_URL)
