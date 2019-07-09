@@ -67,18 +67,21 @@ const plugin: JupyterFrontEndPlugin<void> = {
     // make the commits header and content elements
     const commitsHeader = document.createElement('header')
     const commitsContent = document.createElement('div')
+    const docsContent = document.createElement('div')
 
     commitsHeader.className = 'dotscience-header'
     commitsContent.className = 'dotscience-commits-content'
 
     commitsHeader.textContent = 'Runs'
-    commitsContent.innerHTML = 'No runs yet. Create one with: <tt>import dotscience as ds; ds.interactive(); ds.publish("message")</tt>'
+    commitsContent.textContent = 'No runs recorded yet for this project.'
+    docsContent.innerHTML = 'No runs recorded yet for this project. Create runs with:<br/><br/><tt>import dotscience as ds<br/>ds.interactive()<br/>ds.publish("run message")</tt><br/><br/>Also capture input and output files with <tt>ds.input(filename)</tt>, parameters with <tt>ds.parameter("param", value)</tt>, and summary stats with <tt>ds.summary("statistic", value)</tt>.<br/><br/>More info: <a href="https://docs.dotscience.com/references/dotscience-python-library/">Dotscience Python library docs</a>.'
 
     // build up the tree of elements
     rootContainer.appendChild(statusHeader)
     rootContainer.appendChild(statusContent)
     rootContainer.appendChild(commitsHeader)
     rootContainer.appendChild(commitsContent)
+    rootContainer.appendChild(docsContent)
 
     rootWidget.node.appendChild(rootContainer)
 
