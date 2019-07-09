@@ -72,7 +72,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     commitsContent.className = 'dotscience-commits-content'
 
     commitsHeader.textContent = 'Runs'
-    commitsContent.textContent = 'No runs yet. Create one with ds.publish("message")'
+    commitsContent.innerHTML = 'No runs yet. Create one with: <tt>import dotscience as ds; ds.interactive(); ds.publish("message")</tt>'
 
     // build up the tree of elements
     rootContainer.appendChild(statusHeader)
@@ -162,6 +162,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
       const messageContainer = document.createElement('div')
       messageContainer.className = 'message'
+
+      // TODO: more info here
+      // TODO: if there are multiple runs in a commit, show multiple times?
       messageContainer.textContent = commit.Metadata.message
 
       titleContainer.appendChild(dateContainer)
@@ -176,7 +179,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
       const toggleButton = document.createElement('button')
 
-      toggleButton.textContent = COMMIT_TOGGLE_STATES[commit.Id] ? '- hide' : '+ show'
+      toggleButton.textContent = COMMIT_TOGGLE_STATES[commit.Id] ? '- hide' : '+ details'
 
       toggleButton.addEventListener('click', () => {
         const existingValue = COMMIT_TOGGLE_STATES[commit.Id] || false
