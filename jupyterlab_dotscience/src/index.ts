@@ -71,8 +71,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     commitsHeader.className = 'dotscience-header'
     commitsContent.className = 'dotscience-commits-content'
 
-    commitsHeader.textContent = 'Commits'
-    commitsContent.textContent = 'no commits'
+    commitsHeader.textContent = 'Runs'
+    commitsContent.textContent = 'No runs yet. Create one with ds.publish("message")'
 
     // build up the tree of elements
     rootContainer.appendChild(statusHeader)
