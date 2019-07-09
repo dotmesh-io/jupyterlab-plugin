@@ -110,7 +110,12 @@ const plugin: JupyterFrontEndPlugin<void> = {
       ]).then(results => {
         // update the commit list if it has changed
         const commitData = results[0]
-        
+
+        // remove the initial commit (not interesting/relevant to users) and reverse the
+        // list (so that more recent commits are shown at the top)
+        commitData.shift()
+        commitData.reverse()
+
         if(commitData.length!=COMMIT_DATA.length) {
           COMMIT_DATA = commitData
           populateCommits()
@@ -132,7 +137,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
         console.log(error)
         STATUS_DATA = {status: "error",
         error_detail: [{
-          message: "An error has occurred and changes are not being saved in Dotscience. Please restart JupyterLab to fix this issue."
+          message: "An error has occurred and changes are not being saved in Dotscience. Restarting Jupyter may fix this issue: " + string(error)
         }]}
         populateStatus()
       })
@@ -170,7 +175,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       toggleContainer.className = 'dotscience-commit-toggle'
 
       const toggleButton = document.createElement('button')
-      
+
       toggleButton.textContent = COMMIT_TOGGLE_STATES[commit.Id] ? '- hide' : '+ show'
 
       toggleButton.addEventListener('click', () => {
@@ -215,7 +220,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       commitContainer.appendChild(metadataContainer)
 
       return commitContainer
-    }   
+    }
 
     const getNotebookSummary = (notebooks) => {
       const notebookNames = Object.keys(notebooks)
@@ -238,11 +243,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     const getStatusFilesChanged = (changedFiles, moreChangedFiles) => {
       if(changedFiles.length <= 0) return ''
-      const parts = changedFiles.map((changedFile) => {        
+      const parts = changedFiles.map((changedFile) => {
         return `
 <li><b>${ changedFile.filename }</b> (${ changedFile.file_status })</li>
         `
-      }).join("\n") + (moreChangedFiles == 0 ? '' : (' and ' + moreChangedFiles + ' more'))     
+      }).join("\n") + (moreChangedFiles == 0 ? '' : (' and ' + moreChangedFiles + ' more'))
 
       return `
 <div>
@@ -287,7 +292,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
             } else {
               errorMsg = `We couldn't read the notebook ${ errorDetails[error].notebook }, please check it is saved in the correct JSON format.`
             }
-            
+
             errorString += `
             <div class="dotscience-error-text">
               <p> ${errorMsg} </p>
@@ -302,7 +307,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
           }
         }
       }
-  
+
       return `
         <div>
           <p>Status: <b class="${ statusClassname }">${ status }</b></p>
