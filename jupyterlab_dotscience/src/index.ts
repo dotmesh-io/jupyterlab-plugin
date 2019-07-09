@@ -137,7 +137,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
         console.log(error)
         STATUS_DATA = {status: "error",
         error_detail: [{
-          message: "An error has occurred and changes are not being saved in Dotscience. Restarting Jupyter may fix this issue: " + string(error)
+          message: "An error has occurred and changes are not being saved in Dotscience. Restarting Jupyter may fix this issue: " + String(error)
         }]}
         populateStatus()
       })
