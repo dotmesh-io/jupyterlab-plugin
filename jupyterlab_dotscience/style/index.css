@@ -91,7 +91,6 @@
 }
 
 #dotscience-manager .dotscience-run-container {
-  padding: 12px 12px;
   border: none;
   border-bottom: 1px solid #e5e5e5;
   position: relative;
@@ -100,7 +99,14 @@
 
 #dotscience-manager .dotscience-run-element {
   padding: 2px 2px;
+  margin: 3px 3px 0 0;
+  border: 1px solid gray;
+  background-color: #eeeeee;
   display: inline-block;
+}
+
+#dotscience-manager>strong {
+    font-weight:bold;
 }
 
 #dotscience-manager .dotscience-bottom-gap {

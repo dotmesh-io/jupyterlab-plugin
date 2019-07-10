@@ -92,7 +92,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
         More info:
         <a target="_top" href="https://docs.dotscience.com/references/dotscience-python-library/" style="color:blue; text-decoration:underline;">
           Dotscience Python library docs
-        </a>.
+        </a>
       </div>
     `
 
@@ -173,7 +173,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       return stringSt.length == 2 ? stringSt : '0' + stringSt
     }
 
-    const getCommitTitle = (commit: any, id: any) => {
+    const getCommitTitle = (commit: any, id: any, includeCommitMessage: boolean) => {
       const timestampNumber = Number(commit.Metadata.timestamp) / 1000000
       const timestampDate = new Date(timestampNumber)
       const timestampDateTitle = // 2019-07-21 07:35:04
@@ -194,12 +194,12 @@ const plugin: JupyterFrontEndPlugin<void> = {
       const messageContainer = document.createElement('div')
       messageContainer.className = 'message'
 
-      // TODO: more info here
-      // TODO: if there are multiple runs in a commit, show multiple times?
       messageContainer.textContent = commit.Metadata.message
 
       titleContainer.appendChild(dateContainer)
-      titleContainer.appendChild(messageContainer)
+      if (includeCommitMessage) {
+        titleContainer.appendChild(messageContainer)
+      }
 
       return titleContainer
     }
@@ -298,7 +298,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
         addNote("<strong>Extra files detected, please tag them with ds.input or ds.output</strong>")
       }
       if (description) {
-        addNote("<strong>Run message:</strong> "+description)
+        addNote("<strong>Message:</strong> "+description)
       }
       if (workloadFile) {
         addNote("<strong>File:</strong> "+workloadFile)
@@ -334,7 +334,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
     }
 
     const getCommitContainer = (commit: any, id: any) => {
-      const titleContainer = getCommitTitle(commit, id)
       const toggleContainer = getCommitToggleButton(commit, id)
       const metadataContainer = getCommitMetadata(commit, id)
 
@@ -343,11 +342,17 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
       const runIds = getRunIds(commit)
       if (runIds.length > 0) {
+        // false == don't include commit message
+        const titleContainer = getCommitTitle(commit, id, false)
+        commitContainer.appendChild(titleContainer)
+
         runIds.forEach((runId) => {
           commitContainer.appendChild(getRunElement(commit, runId))
         })
       } else {
-        // only add the title (commit-level message) if there are no runs
+        // only add the title (commit-level message) if there are no runs (true
+        // = include commit message)
+        const titleContainer = getCommitTitle(commit, id, true)
         commitContainer.appendChild(titleContainer)
       }
 
