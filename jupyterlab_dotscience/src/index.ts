@@ -78,14 +78,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
         Create runs with:
         <br/><br/>
         <tt>
-        import dotscience as ds <br/>
-        ds.interactive() <br/>
-        ds.start() <br/>
-        #ds.input(file) <br/>
-        #ds.label("label", value) <br/>
-        #ds.parameter("param", value) <br/>
-        #ds.summary("statistic", value) <br/>
-        #ds.output(output_file) <br/>
+        import dotscience as ds<br/>
+        ds.interactive()<br/>
+        ds.start()<br/>
+        #ds.input(file)<br/>
+        #ds.label("label", value)<br/>
+        #ds.parameter("param", value)<br/>
+        #ds.summary("statistic", value)<br/>
+        #ds.output(output_file)<br/>
         ds.publish("run message")
         </tt>
         <br/><br/>
@@ -200,6 +200,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       if (includeCommitMessage) {
         titleContainer.appendChild(messageContainer)
       }
+      titleContainer.appendChild(document.createElement("br"))
 
       return titleContainer
     }
