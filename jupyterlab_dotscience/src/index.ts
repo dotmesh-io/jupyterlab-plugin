@@ -271,13 +271,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
         if (key == "run."+runId+".workload-file") {
           workloadFile = value
         }
-        if (key == "run."+runId+".parameters.") {
+        if (key.startsWith("run."+runId+".parameters.")) {
           parameters[key.substring(("run."+runId+".parameters").length)] = value
         }
-        if (key == "run."+runId+".summary") {
+        if (key.startsWith("run."+runId+".summary.")) {
           summary[key.substring(("run."+runId+".summary").length)] = value
         }
-        if (key.startsWith("run."+runId+".labels")) {
+        if (key.startsWith("run."+runId+".labels.")) {
           labels[key.substring(("run."+runId+".labels").length)] = value
         }
         if (key == "run."+runId+".input-files") {
