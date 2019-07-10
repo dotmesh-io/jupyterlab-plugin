@@ -71,8 +71,30 @@ const plugin: JupyterFrontEndPlugin<void> = {
     commitsHeader.className = 'dotscience-header'
     commitsContent.className = 'dotscience-commits-content'
 
-    commitsHeader.textContent = 'Commits'
-    commitsContent.textContent = 'no commits'
+    commitsHeader.textContent = 'Runs'
+      commitsContent.innerHTML = `
+      <div style="padding: 5px 10px">
+        No runs recorded yet for this project.
+        Create runs with:
+        <br/><br/>
+        <tt>
+        import dotscience as ds<br/>
+        ds.interactive()<br/>
+        ds.start()<br/>
+        #ds.input(file)<br/>
+        #ds.label("label", value)<br/>
+        #ds.parameter("param", value)<br/>
+        #ds.summary("statistic", value)<br/>
+        #ds.output(output_file)<br/>
+        ds.publish("run message")
+        </tt>
+        <br/><br/>
+        More info:
+        <a target="_top" href="https://docs.dotscience.com/references/dotscience-python-library/" style="color:blue; text-decoration:underline;">
+          Dotscience Python library docs
+        </a>
+      </div>
+    `
 
     // build up the tree of elements
     rootContainer.appendChild(statusHeader)
@@ -110,10 +132,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
       ]).then(results => {
         // update the commit list if it has changed
         const commitData = results[0]
-        
-        if(commitData.length!=COMMIT_DATA.length) {
-          COMMIT_DATA = commitData
-          populateCommits()
+
+        if (commitData) {
+          // remove the initial commit (not interesting/relevant to users) and reverse the
+          // list (so that more recent commits are shown at the top)
+          commitData.shift()
+          commitData.reverse()
+          if(commitData.length!=COMMIT_DATA.length) {
+            COMMIT_DATA = commitData
+            populateCommits()
+          }
         }
 
         // update the status if it has changed
@@ -132,9 +160,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
         console.log(error)
         STATUS_DATA = {status: "error",
         error_detail: [{
-          message: "An error has occurred and changes are not being saved in Dotscience. Please restart JupyterLab to fix this issue."
+          message: "An error has occurred and changes are not being saved in Dotscience. Restarting Jupyter may fix this issue: " + String(error)
         }]}
         populateStatus()
+        // do retry on error
+        CURRENT_FETCH_DATA_TIMEOUT_ID = setTimeout(fetchData, 1000)
       })
     }
 
@@ -143,10 +173,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
       return stringSt.length == 2 ? stringSt : '0' + stringSt
     }
 
-    const getCommitTitle = (commit: any, id: any) => {
+    const getCommitTitle = (commit: any, id: any, includeCommitMessage: boolean) => {
       const timestampNumber = Number(commit.Metadata.timestamp) / 1000000
       const timestampDate = new Date(timestampNumber)
-      const timestampDateTitle = datePadding(timestampDate.getDate())  + "/" + datePadding(timestampDate.getMonth()+1) + "/" + timestampDate.getFullYear() + " " + datePadding(timestampDate.getHours()) + ":" + datePadding(timestampDate.getMinutes())
+      const timestampDateTitle = // 2019-07-21 07:35:04
+        timestampDate.getFullYear() + "-" +
+        datePadding(timestampDate.getMonth()+1) + "-" +
+        datePadding(timestampDate.getDate()) + " " +
+        datePadding(timestampDate.getHours()) + ":" +
+        datePadding(timestampDate.getMinutes()) + ":" +
+        datePadding(timestampDate.getSeconds())
 
       const titleContainer = document.createElement('div')
       titleContainer.className = 'dotscience-commit-title'
@@ -157,10 +193,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
       const messageContainer = document.createElement('div')
       messageContainer.className = 'message'
+
       messageContainer.textContent = commit.Metadata.message
 
       titleContainer.appendChild(dateContainer)
-      titleContainer.appendChild(messageContainer)
+      if (includeCommitMessage) {
+        titleContainer.appendChild(messageContainer)
+      }
+      titleContainer.appendChild(document.createElement("br"))
 
       return titleContainer
     }
@@ -170,8 +210,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
       toggleContainer.className = 'dotscience-commit-toggle'
 
       const toggleButton = document.createElement('button')
-      
-      toggleButton.textContent = COMMIT_TOGGLE_STATES[commit.Id] ? '- hide' : '+ show'
+
+      toggleButton.textContent = COMMIT_TOGGLE_STATES[commit.Id] ? '- hide' : '+ raw'
 
       toggleButton.addEventListener('click', () => {
         const existingValue = COMMIT_TOGGLE_STATES[commit.Id] || false
@@ -193,7 +233,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       const metadataList = document.createElement('ul')
       metadataContainer.appendChild(metadataList)
 
-      Object.keys(commit.Metadata || {}).forEach((key) => {
+      Object.keys(commit.Metadata || {}).sort().forEach((key) => {
         const metadataItem = document.createElement('li')
         metadataItem.textContent = `${key}: ${commit.Metadata[key]}`
         metadataList.appendChild(metadataItem)
@@ -202,20 +242,126 @@ const plugin: JupyterFrontEndPlugin<void> = {
       return metadataContainer
     }
 
+    const getRunIds = (commit: any) => {
+      return JSON.parse((commit.Metadata || {}).runs || "[]")
+    }
+
+    const getRunElement = (commit: any, runId: string) => {
+      const runElement = document.createElement('div')
+      runElement.className = "dotscience-run-container"
+
+      var authority = ""
+      var description = ""
+      var workloadFile = ""
+      var parameters = {}
+      var summary = {}
+      var labels = {}
+      var inputFiles = []
+      var outputFiles = []
+
+      Object.keys(commit.Metadata || {}).sort().forEach((key) => {
+        const value = commit.Metadata[key]
+        // parsing
+        if (key == "run."+runId+".description") {
+          description = value
+        }
+        if (key == "run."+runId+".authority") {
+          authority = value
+        }
+        if (key == "run."+runId+".workload-file") {
+          workloadFile = value
+        }
+        if (key.startsWith("run."+runId+".parameters.")) {
+          parameters[key.substring(("run."+runId+".parameters.").length)] = value
+        }
+        if (key.startsWith("run."+runId+".summary.")) {
+          summary[key.substring(("run."+runId+".summary.").length)] = value
+        }
+        if (key.startsWith("run."+runId+".labels.")) {
+          labels[key.substring(("run."+runId+".labels.").length)] = value
+        }
+        if (key == "run."+runId+".input-files") {
+          inputFiles.push(value)
+        }
+        if (key == "run."+runId+".output-files") {
+          outputFiles.push(value)
+        }
+      })
+
+      // rendering
+      const addNote = (html: string) => {
+        const runItem = document.createElement('div')
+        runItem.className = "dotscience-run-element"
+        runItem.innerHTML = html
+        runElement.appendChild(runItem)
+      }
+      if (authority == "correction") {
+        addNote("<strong>Extra files detected, please tag them with ds.input or ds.output</strong>")
+      }
+      if (description) {
+        addNote("<strong>Message:</strong> "+description)
+      }
+      if (workloadFile) {
+        addNote("<strong>File:</strong> "+workloadFile)
+      }
+      Object.keys(parameters).forEach((key) => {
+        const value = parameters[key]
+        addNote("<strong>Param:</strong> "+key+" = "+value)
+      })
+      Object.keys(summary).forEach((key) => {
+        const value = summary[key]
+        addNote("<strong>Summary:</strong> "+key+" = "+value)
+      })
+      Object.keys(labels).forEach((key) => {
+        const value = labels[key]
+        addNote("<strong>Label:</strong> "+key+" = "+value)
+      })
+      const MAX = 10
+      inputFiles.slice(0, MAX).forEach((inputFile) => {
+        addNote("<strong>Input:</strong> "+inputFile)
+      })
+      if (inputFiles.length > MAX) {
+        addNote(`... and ${inputFiles.length - MAX} more input files`)
+      }
+      outputFiles.slice(0, MAX).forEach((outputFile) => {
+        addNote("<strong>Output:</strong> "+outputFile)
+      })
+      if (outputFiles.length > MAX) {
+        addNote(`... and ${outputFiles.length - MAX} more output files`)
+      }
+
+      return runElement
+
+    }
+
     const getCommitContainer = (commit: any, id: any) => {
-      const titleContainer = getCommitTitle(commit, id)
       const toggleContainer = getCommitToggleButton(commit, id)
       const metadataContainer = getCommitMetadata(commit, id)
 
       const commitContainer = document.createElement('div')
       commitContainer.className = 'dotscience-commit-container'
 
-      commitContainer.appendChild(titleContainer)
+      const runIds = getRunIds(commit)
+      if (runIds.length > 0) {
+        // false == don't include commit message
+        const titleContainer = getCommitTitle(commit, id, false)
+        commitContainer.appendChild(titleContainer)
+
+        runIds.forEach((runId) => {
+          commitContainer.appendChild(getRunElement(commit, runId))
+        })
+      } else {
+        // only add the title (commit-level message) if there are no runs (true
+        // = include commit message)
+        const titleContainer = getCommitTitle(commit, id, true)
+        commitContainer.appendChild(titleContainer)
+      }
+
       commitContainer.appendChild(toggleContainer)
       commitContainer.appendChild(metadataContainer)
 
       return commitContainer
-    }   
+    }
 
     const getNotebookSummary = (notebooks) => {
       const notebookNames = Object.keys(notebooks)
@@ -238,11 +384,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     const getStatusFilesChanged = (changedFiles, moreChangedFiles) => {
       if(changedFiles.length <= 0) return ''
-      const parts = changedFiles.map((changedFile) => {        
+      const parts = changedFiles.map((changedFile) => {
         return `
 <li><b>${ changedFile.filename }</b> (${ changedFile.file_status })</li>
         `
-      }).join("\n") + (moreChangedFiles == 0 ? '' : (' and ' + moreChangedFiles + ' more'))     
+      }).join("\n") + (moreChangedFiles == 0 ? '' : (' and ' + moreChangedFiles + ' more'))
 
       return `
 <div>
@@ -287,7 +433,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
             } else {
               errorMsg = `We couldn't read the notebook ${ errorDetails[error].notebook }, please check it is saved in the correct JSON format.`
             }
-            
+
             errorString += `
             <div class="dotscience-error-text">
               <p> ${errorMsg} </p>
@@ -302,7 +448,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
           }
         }
       }
-  
+
       return `
         <div>
           <p>Status: <b class="${ statusClassname }">${ status }</b></p>
