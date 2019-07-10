@@ -200,7 +200,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
       if (includeCommitMessage) {
         titleContainer.appendChild(messageContainer)
       }
-      titleContainer.appendChild(document.createElement("br"))
 
       return titleContainer
     }
