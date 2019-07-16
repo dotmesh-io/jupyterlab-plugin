@@ -163,6 +163,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
           message: "An error has occurred and changes are not being saved in Dotscience. Restarting Jupyter may fix this issue: " + String(error)
         }]}
         populateStatus()
+        // reset the "last status" cache so that success -> error -> success
+        // doesn't get status stuck on error
+        LAST_STATUS_JSON_STRING = JSON.stringify(statusData)
         // do retry on error
         CURRENT_FETCH_DATA_TIMEOUT_ID = setTimeout(fetchData, 1000)
       })
