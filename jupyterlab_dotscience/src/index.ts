@@ -165,7 +165,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
         populateStatus()
         // reset the "last status" cache so that success -> error -> success
         // doesn't get status stuck on error
-        LAST_STATUS_JSON_STRING = JSON.stringify(statusData)
+        LAST_STATUS_JSON_STRING = JSON.stringify(STATUS_DATA)
         // do retry on error
         CURRENT_FETCH_DATA_TIMEOUT_ID = setTimeout(fetchData, 1000)
       })
