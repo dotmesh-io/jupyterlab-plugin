@@ -365,25 +365,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
       return commitContainer
     }
 
-    const getNotebookSummary = (notebooks) => {
-      const notebookNames = Object.keys(notebooks)
-      if(notebookNames.length <= 0) return ''
-
-      const parts = notebookNames.map((name) => {
-        const runCount = notebooks[name].runs
-        return `
-<li><b>${ name }</b> (${ runCount } run${ runCount == 1 ? '' : 's'})</li>
-        `
-      }).join("\n")
-
-      return `
-<div>
-  <p>${ notebookNames.length } notebook${ notebookNames.length == 1 ? '' : 's' }:</p>
-  <ul class="dotscience-summary-ul">${parts}</ul>
-</div>
-`
-    }
-
     const getStatusFilesChanged = (changedFiles, moreChangedFiles) => {
       if(changedFiles.length <= 0) return ''
       const parts = changedFiles.map((changedFile) => {
@@ -461,14 +442,12 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     const populateStatus = () => {
       const statusSummary = getStatusSummary(STATUS_DATA.status, STATUS_DATA.error_detail)
-      const notebookSummary = getNotebookSummary(STATUS_DATA.notebooks || [])
       const changedFileHTML = getStatusFilesChanged(STATUS_DATA.changed_files || [], STATUS_DATA.more_changed_files || 0)
       const unknownFileHTML = getStatusUnknownFiles(STATUS_DATA.unclaimed_files || [], STATUS_DATA.more_unclaimed_files || 0)
 
       statusContent.innerHTML = `
 <div>
 ${statusSummary}
-${notebookSummary}
 ${changedFileHTML}
 ${unknownFileHTML}
 </div>
