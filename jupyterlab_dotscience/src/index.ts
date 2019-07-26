@@ -260,6 +260,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       var labels = {}
       var inputFiles = []
       var outputFiles = []
+      var datasetInputFiles = []
 
       Object.keys(commit.Metadata || {}).sort().forEach((key) => {
         const value = commit.Metadata[key]
@@ -283,10 +284,37 @@ const plugin: JupyterFrontEndPlugin<void> = {
           labels[key.substring(("run."+runId+".labels.").length)] = value
         }
         if (key == "run."+runId+".input-files") {
-          inputFiles.push(value)
+          try {
+            inputFiles = JSON.parse(value)
+          } catch(e) {
+            console.error(`tried to parse JSON string of input files:`)
+            console.error(value)
+            console.error(e)
+          }
         }
         if (key == "run."+runId+".output-files") {
-          outputFiles.push(value)
+          try {
+            outputFiles = JSON.parse(value)
+          } catch(e) {
+            console.error(`tried to parse JSON string of output files:`)
+            console.error(value)
+            console.error(e)
+          }
+        }
+        if (key.startsWith("run."+runId+".dataset-input-files.")) {
+          var datasetName = key.substring(("run."+runId+".dataset-input-files.").length)
+          var singleDatasetFiles = []
+          try {
+            singleDatasetFiles = JSON.parse(value)
+          } catch(e) {
+            console.error(`tried to parse JSON string of dataset input files:`)
+            console.error(value)
+            console.error(e)
+          }
+          singleDatasetFiles = singleDatasetFiles.map(filename => {
+            return datasetName + ' / ' + filename
+          })
+          datasetInputFiles = datasetInputFiles.concat(singleDatasetFiles)
         }
       })
 
@@ -330,6 +358,12 @@ const plugin: JupyterFrontEndPlugin<void> = {
       })
       if (outputFiles.length > MAX) {
         addNote(`... and ${outputFiles.length - MAX} more output files`)
+      }
+      datasetInputFiles.slice(0, MAX).forEach((datasetInputFile) => {
+        addNote("<strong>Dataset Input:</strong> "+datasetInputFile)
+      })
+      if (datasetInputFiles.length > MAX) {
+        addNote(`... and ${datasetInputFiles.length - MAX} more dataset input files`)
       }
 
       return runElement
@@ -415,6 +449,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
               errorMsg = `Dotscience has output invalid JSON in ${ errorDetails[error].notebook }, cell ${ errorDetails[error].cell }. This is an error, please contact support@dotscience.com`
             } else {
               errorMsg = `We couldn't read the notebook ${ errorDetails[error].notebook }, please check it is saved in the correct JSON format.`
+
+              // clear this error message after 10 seconds
+              setTimeout(function() {
+                document.querySelector('.dotscience-error-text').innerHTML = ''
+              }, 10 * 1000)
             }
 
             errorString += `
