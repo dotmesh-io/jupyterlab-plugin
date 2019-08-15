@@ -28,13 +28,3 @@ deploy_pypi:
     - ./scripts/shipit-pypi.sh -u $PYPI_USER -p $PYPI_PASSWORD
   only:
     - tags
-
-trigger_docker:
-  stage: trigger_docker
-  tags:
-    - ubuntu-bionic
-    - fast
-  script:
-    - curl -X POST -F "token=$CI_JOB_TOKEN" -F "ref=master" -F "variables[PLUGIN_TAG]=$CI_COMMIT_TAG" https://gitlab.dotmesh.com/api/v4/projects/dotmesh%2Fjupyterlab-tensorflow-sync/trigger/pipeline
-  only:
-    - tags
