@@ -19,8 +19,8 @@ import '../style/index.css';
 
 //const API_URL = 'http://127.0.0.1:8000/example.json'
 
-const COMMITS_API_URL = PageConfig.getBaseURL() + 'dotscience/commits'
-const STATUS_API_URL = PageConfig.getBaseURL() + 'dotscience/status'
+const COMMITS_API_URL = PageConfig.getBaseUrl() + 'dotscience/commits'
+const STATUS_API_URL = PageConfig.getBaseUrl() + 'dotscience/status'
 
 type GenericObject = { [key: string]: any };
 
