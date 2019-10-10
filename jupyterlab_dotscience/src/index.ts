@@ -1,6 +1,7 @@
 import {
   ILayoutRestorer, JupyterLab, JupyterFrontEndPlugin
 } from '@jupyterlab/application';
+import { PageConfig } from '@jupyterlab/coreutils';
 
 /*
 import {
@@ -18,8 +19,8 @@ import '../style/index.css';
 
 //const API_URL = 'http://127.0.0.1:8000/example.json'
 
-const COMMITS_API_URL = '/dotscience/commits'
-const STATUS_API_URL = '/dotscience/status'
+const COMMITS_API_URL = PageConfig.getBaseURL() + 'dotscience/commits'
+const STATUS_API_URL = PageConfig.getBaseURL() + 'dotscience/status'
 
 type GenericObject = { [key: string]: any };
 
