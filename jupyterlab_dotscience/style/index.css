@@ -90,6 +90,27 @@
   overflow: visible;
 }
 
+#dotscience-manager .dotscience-run-container {
+  border: none;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 5px;
+  position: relative;
+  overflow: visible;
+  clear: both;
+}
+
+#dotscience-manager .dotscience-run-element {
+  padding: 2px 2px;
+  margin: 3px 3px 0 0;
+  border: 1px solid gray;
+  background-color: #eeeeee;
+  display: inline-block;
+}
+
+#dotscience-manager>strong {
+    font-weight:bold;
+}
+
 #dotscience-manager .dotscience-bottom-gap {
   height: 50px;
 }
