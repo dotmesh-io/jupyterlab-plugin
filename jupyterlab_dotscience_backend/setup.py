@@ -15,6 +15,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/dotmesh-io/jupyterlab-plugin",
     packages=setuptools.find_packages(),
+    install_requires=['datadots-api>=0.2.1'],
     classifiers=(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
