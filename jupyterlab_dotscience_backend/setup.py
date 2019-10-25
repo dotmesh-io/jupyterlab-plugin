@@ -6,8 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="jupyterlab_dotscience_backend",
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    version='0.2.9',
     author="dotmesh",
     author_email="luke@dotmesh.com",
     description="Backend component for dotmesh",

@@ -1,0 +1,27 @@
+kind: pipeline
+name: default
+
+steps:
+  # don't have any tests yet so just check it builds
+- name: install
+  image: python:3.8.0-alpine3.10
+  commands:
+  - cd jupyterlab_dotscience_backend && pip install -e .
+- name: pypi_publish
+  image: plugins/pypi
+  when:
+    event: [ tag ]
+  settings:
+    setupfile: jupyterlab_dotscience_backend/setup.py
+    username: 
+      from_secret: pypi_username
+    password: 
+      from_secret: pypi_password
+- name: npm
+  image: plugins/npm
+  settings:
+    username: 
+      from_secret: npm_username
+    password:
+      from_secret: npm_password
+    email: bob@bob.me
