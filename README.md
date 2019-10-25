@@ -10,11 +10,11 @@ The frontend is deployed to npm, the backend to pypi.
 
 To deploy the components automatically you should generally just follow:
 ```
-git tag <some-semver>
-git push --tags
+pip3 install bump2version
+./scripts/release.sh $VERSION
 ```
 
-This will then trigger `jupyterlab-tensorflow`'s gitlab pipeline, which will pull the tag from what you fed to git, install from npm and pypi and use the tag to form part of the final docker tag. After that it will trigger `e2e`'s gitlab pipeline and assuming it all passes, release to `latest`.
+This will release itself, then later renovate should pick up the change from npm/pypi and suggest a pull request on the `jupyterlab-tensorflow` repo. You can override this by doing that PR manually.
 
 If you for any reason need to manually deploy to only npm and pypi, you need to have the following variables in your environment:
 
