@@ -19,9 +19,36 @@ steps:
       from_secret: pypi_password
 - name: npm
   image: plugins/npm
+  when:
+    event: [ tag ]
   settings:
-    username: 
-      from_secret: npm_username
-    password:
-      from_secret: npm_password
-    email: bob@bob.me
+    token:
+      from_secret: npm_token
+    folder: jupyterlab_dotscience
+- name: slack
+  image: plugins/slack
+  when:
+    event: [ push, pull_request ]
+    status: [ success, failure ]
+  depends_on:
+  - install
+  settings:
+    webhook:
+      from_secret: slack_url
+    channel: ci
+    username: drone
+    icon_url: https://i.pinimg.com/originals/51/29/a4/5129a48ddad9e8408d2757dd10eb836f.jpg
+- name: slack-tag
+  image: plugins/slack
+  when:
+    event: [ tag ]
+    status: [ success, failure ]
+  depends_on:
+  - npm
+  - pypi_publish
+  settings:
+    webhook:
+      from_secret: slack_url
+    channel: ci
+    username: drone
+    icon_url: https://i.pinimg.com/originals/51/29/a4/5129a48ddad9e8408d2757dd10eb836f.jpg

@@ -1,4 +1,4 @@
-# jupyterlab-dotscience plugin
+# jupyterlab-dotscience plugin 
 
 A JupyterLab extension which enables data & model versioning and summary statistics tracking.
 
@@ -10,11 +10,11 @@ The frontend is deployed to npm, the backend to pypi.
 
 To deploy the components automatically you should generally just follow:
 ```
-pip3 install bump2version
+pip3 install bump2version # if you don't have this installed already
 ./scripts/release.sh $VERSION
 ```
 
-This will release itself, then later renovate should pick up the change from npm/pypi and suggest a pull request on the `jupyterlab-tensorflow` repo. You can override this by doing that PR manually.
+This will release itself using drone, then later renovate should pick up the change from npm/pypi and suggest a pull request on the `jupyterlab-tensorflow` repo. You can override this by doing that PR manually.
 
 If you for any reason need to manually deploy to only npm and pypi, you need to have the following variables in your environment:
 
