@@ -4,7 +4,7 @@ JupyterLab dotscience: proxy through to local dotscience instance
 
 from notebook.utils import url_path_join
 
-__version__ = '0.0.2'
+__version__ = '0.2.19'
 
 import os, json
 from tornado import web
@@ -146,8 +146,3 @@ class CommitterStatusProxy(APIHandler):
         r = requests.get(COMMITTER_STATUS_URL)
         log_stdout(json.dumps(r.json()))
         self.finish(json.dumps(r.json()))
-
-
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions

@@ -1,13 +1,11 @@
 import setuptools
-import versioneer
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="jupyterlab_dotscience_backend",
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    version='0.2.19',
     author="dotmesh",
     author_email="luke@dotmesh.com",
     description="Backend component for dotmesh",
