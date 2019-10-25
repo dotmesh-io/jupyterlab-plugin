@@ -1,7 +1,0 @@
-FROM node:6
-
-# THIS DOCKERFILE IS ONLY FOR BUILDING AND RELEASING TO NPM
-RUN apt-get update && apt-get install git
-RUN mkdir dsbuild
-COPY ./jupyterlab_dotscience ./dsbuild/jupyterlab_dotscience
-
