@@ -21,6 +21,7 @@ import '../style/index.css';
 
 const COMMITS_API_URL = PageConfig.getBaseUrl() + 'dotscience/commits'
 const STATUS_API_URL = PageConfig.getBaseUrl() + 'dotscience/status'
+const WIDGET_ID = 'dotscience-manager'
 
 type GenericObject = { [key: string]: any };
 
@@ -42,7 +43,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     // make the root widget that will be added to the Jupyter UI
     const rootWidget = new Widget()
-    rootWidget.id = 'dotscience-manager'
+    rootWidget.id = WIDGET_ID
     rootWidget.title.label = 'Dotscience'
 
     const rootContainer = document.createElement('div')
@@ -105,7 +106,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     rootWidget.node.appendChild(rootContainer)
 
-    shell.add(rootWidget, "left", { rank: 50 });
+    shell.add(rootWidget, "right", { rank: 50 });
 
     const fetchCommitData = () => {
       return fetch(COMMITS_API_URL)
@@ -510,6 +511,7 @@ ${unknownFileHTML}
     }
 
     app.restored.then(() => {
+      app.shell.activateById(WIDGET_ID)
       shell.layoutModified.connect(() => { fetchData() });
       fetchData()
     });
