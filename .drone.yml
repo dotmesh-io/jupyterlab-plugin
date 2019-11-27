@@ -29,7 +29,9 @@ steps:
 - name: npm_build
   image: node:10-alpine
   commands:
-    - cd jupyterlab_dotscience && npm run build
+    - cd jupyterlab_dotscience
+    - npm install
+    - npm run build
 - name: npm
   image: plugins/npm
   when:
