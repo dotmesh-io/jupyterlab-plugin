@@ -17,6 +17,8 @@ steps:
       from_secret: pypi_username
     password: 
       from_secret: pypi_password
+    distributions:
+      - bdist_wheel
 - name: npm
   image: plugins/npm
   when:
