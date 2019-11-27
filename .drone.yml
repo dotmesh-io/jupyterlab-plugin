@@ -11,6 +11,8 @@ steps:
   # https://github.com/drone-plugins/drone-pypi/issues/23 is fixed.
 - name: pypi_publish
   image: python:3.8.0-slim-buster
+  depends_on:
+  - install
   when:
     event: [ tag ]
   environment:
@@ -24,10 +26,18 @@ steps:
     - /tmp/venv/bin/pip install twine setuptools wheel
     - /tmp/venv/bin/python setup.py sdist bdist_wheel
     - /tmp/venv/bin/twine upload dist/*
+- name: npm_build
+  image: node:10-alpine
+  commands:
+    - cd jupyterlab_dotscience
+    - npm install
+    - npm run build
 - name: npm
   image: plugins/npm
   when:
     event: [ tag ]
+  depends_on:
+    - npm_build
   settings:
     token:
       from_secret: npm_token
