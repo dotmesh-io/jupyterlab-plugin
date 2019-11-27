@@ -7,18 +7,23 @@ steps:
   image: python:3.8.0-alpine3.10
   commands:
   - cd jupyterlab_dotscience_backend && pip install -e .
+  # ideally we'd use the drone plugin, but that won't work until
+  # https://github.com/drone-plugins/drone-pypi/issues/23 is fixed.
 - name: pypi_publish
-  image: plugins/pypi
+  image: python:3.8.0-slim-buster
   when:
     event: [ tag ]
-  settings:
-    setupfile: jupyterlab_dotscience_backend/setup.py
-    username: 
+  environment:
+    TWINE_USERNAME: 
       from_secret: pypi_username
-    password: 
+    TWINE_PASSWORD: 
       from_secret: pypi_password
-    distributions:
-      - bdist_wheel
+  commands:
+    - python -m venv /tmp/venv
+    - cd jupyterlab_dotscience_backend
+    - /tmp/venv/bin/pip install twine setuptools wheel
+    - /tmp/venv/bin/python setup.py sdist bdist_wheel
+    - /tmp/venv/bin/twine upload dist/*
 - name: npm
   image: plugins/npm
   when:
