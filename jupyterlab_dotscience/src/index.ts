@@ -37,6 +37,7 @@ var CURRENT_FETCH_DATA_TIMEOUT_ID: any = null
 var STATUS_DATA: any = {}
 var LAST_STATUS_JSON_STRING: any = ''
 
+
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab_dotscience_plugin',
   activate: (app: JupyterLab, restorer: ILayoutRestorer): void => {
@@ -65,19 +66,21 @@ const plugin: JupyterFrontEndPlugin<void> = {
     actionsContent.className = 'dotscience-status-content'
 
     actionsHeader.textContent = 'Actions'
-    actionsContent.textContent = 'loading'
 
-    // make the status header and content elements
-    const statusHeader = document.createElement('header')
     const saveButton = document.createElement('button')
-    saveButton.value = "Commit and push"
+    saveButton.textContent = "Save and push data"
+    const xsrfToken = document.cookie.match('\\b_xsrf=([^;]*)\\b')[1]
     saveButton.addEventListener("click", () => {
-      fetch(COMMITNPUSH_API_URL, {"method": "PUT"})
+      fetch(COMMITNPUSH_API_URL + "?_xsrf=" + xsrfToken, {"method": "PUT"})
         .then(response => {
           return response.json()
         })
     })
+    saveButton.className = "jp-Button"
+    actionsContent.appendChild(saveButton)
 
+    // make the status header and content elements
+    const statusHeader = document.createElement('header')
     const statusContent = document.createElement('div')
 
     statusHeader.className = 'dotscience-header'
@@ -119,6 +122,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     `
 
     // build up the tree of elements
+    rootContainer.appendChild(actionsHeader)
+    rootContainer.appendChild(actionsContent)
     rootContainer.appendChild(statusHeader)
     rootContainer.appendChild(statusContent)
     rootContainer.appendChild(commitsHeader)

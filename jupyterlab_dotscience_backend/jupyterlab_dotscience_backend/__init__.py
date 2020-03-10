@@ -71,6 +71,7 @@ def load_jupyter_server_extension(nb_server_app):
     base_url = web_app.settings['base_url']
     dotscience = url_path_join(base_url, 'dotscience')
     commits = url_path_join(dotscience, 'commits')
+    commit = url_path_join(dotscience, 'commit')
     status = url_path_join(dotscience, 'status')
 
     print("=========================")
@@ -89,6 +90,10 @@ def load_jupyter_server_extension(nb_server_app):
             status+path_regex,
             CommitterStatusProxy,
             {"notebook_dir": nb_server_app.notebook_dir},
+        ),(
+            commit,
+            CommitterCommitProxy,
+            {}
         )
     ]
     web_app.add_handlers('.*$', handlers)
@@ -150,6 +155,18 @@ class CommitterStatusProxy(APIHandler):
         log_stdout(json.dumps(r.json()))
         self.finish(json.dumps(r.json()))
 
+
+class CommitterCommitProxy(APIHandler):
+    """
+    A handler that makes API calls to the committer to push and commit.
+    """
+
+    def initialize(self):
+        pass
+
+    # TODO make this asynchronous so that it doesn't block jupyter server on
+    # making API calls to the committer
+    # @gen.coroutine
     def put(self, path=""):
         """
         Commit and push.
