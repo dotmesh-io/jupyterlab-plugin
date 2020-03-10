@@ -21,6 +21,7 @@ import '../style/index.css';
 
 const COMMITS_API_URL = PageConfig.getBaseUrl() + 'dotscience/commits'
 const STATUS_API_URL = PageConfig.getBaseUrl() + 'dotscience/status'
+const COMMITNPUSH_API_URL = PageConfig.getBaseUrl() + 'dotscience/commit'
 const WIDGET_ID = 'dotscience-manager'
 
 type GenericObject = { [key: string]: any };
@@ -56,8 +57,27 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     rootContainer.className = 'dotscience-root-container'
 
+    // make the actions header and content elements
+    const actionsHeader = document.createElement('header')
+    const actionsContent = document.createElement('div')
+
+    actionsHeader.className = 'dotscience-header'
+    actionsContent.className = 'dotscience-status-content'
+
+    actionsHeader.textContent = 'Actions'
+    actionsContent.textContent = 'loading'
+
     // make the status header and content elements
     const statusHeader = document.createElement('header')
+    const saveButton = document.createElement('button')
+    saveButton.value = "Commit and push"
+    saveButton.addEventListener("click", () => {
+      fetch(COMMITNPUSH_API_URL, {"method": "PUT"})
+        .then(response => {
+          return response.json()
+        })
+    })
+
     const statusContent = document.createElement('div')
 
     statusHeader.className = 'dotscience-header'

@@ -41,6 +41,7 @@ else:
     CLUSTER_URL = "http://dotmesh-server-inner:32607/rpc"
 
 COMMITTER_STATUS_URL = "http://" + os.environ.get("DOTSCIENCE_COMMITTER_HOSTNAME", "committer") + "/status"
+COMMITTER_COMMIT_URL = "http://" + os.environ.get("DOTSCIENCE_COMMITTER_HOSTNAME", "committer") + "/commit"
 
 def log_stdout(text):
   if os.getenv("TASK.DEBUG_LOGGING") != "" and os.getenv("TASK.DEBUG_LOGGING") is not None:
@@ -128,7 +129,9 @@ class DotmeshAPIProxy(APIHandler):
 
 class CommitterStatusProxy(APIHandler):
     """
-    A handler that makes API calls to the committer to get it's current status
+    A handler that makes API calls to the committer to get it's current status.
+
+    When a PUT is received, commit and push.
     """
 
     def initialize(self, notebook_dir):
@@ -144,5 +147,14 @@ class CommitterStatusProxy(APIHandler):
         """
         log_stdout("Loading committer status from url: %s" % (COMMITTER_STATUS_URL))
         r = requests.get(COMMITTER_STATUS_URL)
+        log_stdout(json.dumps(r.json()))
+        self.finish(json.dumps(r.json()))
+
+    def put(self, path=""):
+        """
+        Commit and push.
+        """
+        log_stdout("Committing and pushing.")
+        r = requests.put(COMMITTER_COMMIT_URL)
         log_stdout(json.dumps(r.json()))
         self.finish(json.dumps(r.json()))
