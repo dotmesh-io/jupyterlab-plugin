@@ -21,6 +21,7 @@ import '../style/index.css';
 
 const COMMITS_API_URL = PageConfig.getBaseUrl() + 'dotscience/commits'
 const STATUS_API_URL = PageConfig.getBaseUrl() + 'dotscience/status'
+const COMMITNPUSH_API_URL = PageConfig.getBaseUrl() + 'dotscience/commit'
 const WIDGET_ID = 'dotscience-manager'
 
 type GenericObject = { [key: string]: any };
@@ -35,6 +36,7 @@ var COMMIT_TOGGLE_STATES: GenericObject = {}
 var CURRENT_FETCH_DATA_TIMEOUT_ID: any = null
 var STATUS_DATA: any = {}
 var LAST_STATUS_JSON_STRING: any = ''
+
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab_dotscience_plugin',
@@ -55,6 +57,27 @@ const plugin: JupyterFrontEndPlugin<void> = {
     rootContainer.appendChild(fullStoryScript)
 
     rootContainer.className = 'dotscience-root-container'
+
+    // make the actions header and content elements
+    const actionsHeader = document.createElement('header')
+    const actionsContent = document.createElement('div')
+
+    actionsHeader.className = 'dotscience-header'
+    actionsContent.className = 'dotscience-status-content'
+
+    actionsHeader.textContent = 'Actions'
+
+    const saveButton = document.createElement('button')
+    saveButton.textContent = "Save and push data"
+    const xsrfToken = document.cookie.match('\\b_xsrf=([^;]*)\\b')[1]
+    saveButton.addEventListener("click", () => {
+      fetch(COMMITNPUSH_API_URL + "?_xsrf=" + xsrfToken, {"method": "PUT"})
+        .then(response => {
+          return response.json()
+        })
+    })
+    saveButton.className = "jp-Button"
+    actionsContent.appendChild(saveButton)
 
     // make the status header and content elements
     const statusHeader = document.createElement('header')
@@ -99,6 +122,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     `
 
     // build up the tree of elements
+    rootContainer.appendChild(actionsHeader)
+    rootContainer.appendChild(actionsContent)
     rootContainer.appendChild(statusHeader)
     rootContainer.appendChild(statusContent)
     rootContainer.appendChild(commitsHeader)

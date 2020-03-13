@@ -4,7 +4,7 @@ JupyterLab dotscience: proxy through to local dotscience instance
 
 from notebook.utils import url_path_join
 
-__version__ = '0.2.26'
+__version__ = '0.2.28'
 
 import os, json
 from tornado import web
@@ -41,6 +41,7 @@ else:
     CLUSTER_URL = "http://dotmesh-server-inner:32607/rpc"
 
 COMMITTER_STATUS_URL = "http://" + os.environ.get("DOTSCIENCE_COMMITTER_HOSTNAME", "committer") + "/status"
+COMMITTER_COMMIT_URL = "http://" + os.environ.get("DOTSCIENCE_COMMITTER_HOSTNAME", "committer") + "/commit"
 
 def log_stdout(text):
   if os.getenv("TASK.DEBUG_LOGGING") != "" and os.getenv("TASK.DEBUG_LOGGING") is not None:
@@ -70,6 +71,7 @@ def load_jupyter_server_extension(nb_server_app):
     base_url = web_app.settings['base_url']
     dotscience = url_path_join(base_url, 'dotscience')
     commits = url_path_join(dotscience, 'commits')
+    commit = url_path_join(dotscience, 'commit')
     status = url_path_join(dotscience, 'status')
 
     print("=========================")
@@ -88,6 +90,10 @@ def load_jupyter_server_extension(nb_server_app):
             status+path_regex,
             CommitterStatusProxy,
             {"notebook_dir": nb_server_app.notebook_dir},
+        ),(
+            commit,
+            CommitterCommitProxy,
+            {}
         )
     ]
     web_app.add_handlers('.*$', handlers)
@@ -128,7 +134,9 @@ class DotmeshAPIProxy(APIHandler):
 
 class CommitterStatusProxy(APIHandler):
     """
-    A handler that makes API calls to the committer to get it's current status
+    A handler that makes API calls to the committer to get it's current status.
+
+    When a PUT is received, commit and push.
     """
 
     def initialize(self, notebook_dir):
@@ -144,5 +152,26 @@ class CommitterStatusProxy(APIHandler):
         """
         log_stdout("Loading committer status from url: %s" % (COMMITTER_STATUS_URL))
         r = requests.get(COMMITTER_STATUS_URL)
+        log_stdout(json.dumps(r.json()))
+        self.finish(json.dumps(r.json()))
+
+
+class CommitterCommitProxy(APIHandler):
+    """
+    A handler that makes API calls to the committer to push and commit.
+    """
+
+    def initialize(self):
+        pass
+
+    # TODO make this asynchronous so that it doesn't block jupyter server on
+    # making API calls to the committer
+    # @gen.coroutine
+    def put(self, path=""):
+        """
+        Commit and push.
+        """
+        log_stdout("Committing and pushing.")
+        r = requests.put(COMMITTER_COMMIT_URL)
         log_stdout(json.dumps(r.json()))
         self.finish(json.dumps(r.json()))
