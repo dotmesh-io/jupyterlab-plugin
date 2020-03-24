@@ -69,7 +69,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     const saveButton = document.createElement('button')
     saveButton.textContent = "Save and push data"
-    const xsrfToken = document.cookie.match('\\b_xsrf=([^;]*)\\b')[1]
+    const xsrfTokenCookieMatch = document.cookie.match('\\b_xsrf=([^;]*)\\b')
+    const xsrfToken = xsrfTokenCookieMatch && xsrfTokenCookieMatch.length > 1 ? xsrfTokenCookieMatch[1] : ''
     saveButton.addEventListener("click", () => {
       fetch(COMMITNPUSH_API_URL + "?_xsrf=" + xsrfToken, {"method": "PUT"})
         .then(response => {
