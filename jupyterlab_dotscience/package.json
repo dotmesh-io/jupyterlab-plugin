@@ -1,6 +1,6 @@
 {
   "name": "@dotscience/jupyterlab-plugin",
-  "version": "0.2.28",
+  "version": "0.2.30",
   "description": "A JupyterLab extension which enables data & model versioning and summary statistics tracking.",
   "keywords": [
     "jupyter",
