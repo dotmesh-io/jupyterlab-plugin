@@ -67,18 +67,35 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     actionsHeader.textContent = 'Actions'
 
+    const inputField = document.createElement('input')
+    inputField.placeholder = "Describe your commit"
+    inputField.id = "commitDescription"
+    inputField.className = 'jp-mod-styled'
+
     const saveButton = document.createElement('button')
     saveButton.textContent = "Save and push data"
     const xsrfTokenCookieMatch = document.cookie.match('\\b_xsrf=([^;]*)\\b')
     const xsrfToken = xsrfTokenCookieMatch && xsrfTokenCookieMatch.length > 1 ? xsrfTokenCookieMatch[1] : ''
     saveButton.addEventListener("click", () => {
-      fetch(COMMITNPUSH_API_URL + "?_xsrf=" + xsrfToken, {"method": "PUT"})
+      let input = document.getElementById("commitDescription") as HTMLInputElement
+      let text = encodeURIComponent(input.value)
+      input.value = ""
+      fetch(COMMITNPUSH_API_URL + "?_xsrf=" + xsrfToken + "&description=" + text, {"method": "PUT"})
         .then(response => {
           return response.json()
         })
     })
     saveButton.className = "jp-Button"
+    actionsContent.appendChild(inputField)
+    actionsContent.appendChild(document.createElement('br'))
     actionsContent.appendChild(saveButton)
+    actionsContent.appendChild(document.createElement('br'))
+    actionsContent.appendChild(document.createElement('br'))
+    let help = document.createElement('p')
+    help.innerHTML = `
+    <b>Note:</b> If you run <code>ds.publish()</code> that
+will automatically save and push as well.`
+    actionsContent.appendChild(help)
 
     // make the status header and content elements
     const statusHeader = document.createElement('header')
