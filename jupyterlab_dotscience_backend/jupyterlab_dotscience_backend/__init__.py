@@ -4,7 +4,7 @@ JupyterLab dotscience: proxy through to local dotscience instance
 
 from notebook.utils import url_path_join
 
-__version__ = '0.2.28'
+__version__ = '0.2.30'
 
 import os, json
 from tornado import web
@@ -171,7 +171,8 @@ class CommitterCommitProxy(APIHandler):
         """
         Commit and push.
         """
-        log_stdout("Committing and pushing.")
-        r = requests.put(COMMITTER_COMMIT_URL)
+        description = self.get_query_argument("description") or ""
+        log_stdout("Committing and pushing: " + description)
+        r = requests.put(COMMITTER_COMMIT_URL, params={"description": description})
         log_stdout(json.dumps(r.json()))
         self.finish(json.dumps(r.json()))
